@@ -1,66 +1,81 @@
-# Trade Journal — Deploy Guide
+# Trade Journal — Cloudflare D1 Deploy Guide
 
-## Local setup
+D1 database (already created):
+- database_name: `trade-journal`
+- database_id: `85f9c436-cb2e-41e7-9534-49f20812a3e7`
+- binding: `D1` (configured in `wrangler.toml`)
+
+## 1. Local dev (SQLite, unchanged)
 
 ```bash
 bun install
-bun run db:generate   # generate Prisma client
-bun run db:push       # create/sync the SQLite database (empty, no demo data)
-bun run dev           # start dev server on http://localhost:3000
+bun run db:push       # create/sync local SQLite db (empty)
+bun run dev           # http://localhost:3000
 ```
 
-The database is a fresh, empty SQLite file at `db/custom.db` (relative path in `.env`).
-All demo trades and uploaded demo images have been removed.
+`prisma generate` runs via `postinstall` using `prisma/schema.prisma`
+(regular client with Rust engine — for local SQLite). API routes use
+`getDb()` which falls back to SQLite locally.
 
-## Production build
+## 2. Apply schema to Cloudflare D1 (one-time)
 
 ```bash
-bun run build
-bun run start
+wrangler d1 execute trade-journal --remote --file=init.sql
 ```
 
-## Deploying to Cloudflare
+`init.sql` is included in this package (generated from the Prisma schema).
+It creates the `Trade` table (and the unused User/Post scaffold tables).
 
-This app currently uses **Prisma + SQLite (file-based)**. Cloudflare's
-serverless runtime (Pages/Workers) does **not** support a persistent
-file-based SQLite database — you must switch to a hosted database.
+## 3. Build for Cloudflare (edge client + OpenNext)
 
-### Recommended: Cloudflare D1
+```bash
+bun run build:cf
+```
 
-1. Create a D1 database:
-   ```bash
-   wrangler d1 create trade-journal
-   wrangler d1 execute trade-journal --file=./prisma/migrations/0_init/migration.sql
-   ```
-2. Replace the Prisma SQLite datasource with the D1 adapter:
-   - `bun add @prisma/adapter-d1`
-   - Update `src/lib/db.ts` to instantiate `PrismaClient` with the
-     `PrismaD1` adapter bound to the D1 binding from `wrangler.toml`.
-   - Set `DATABASE_URL` to the D1 connection string.
-3. Add `next.config.ts` setup for Cloudflare Pages (`@cloudflare/next-on-pages`
-   or the Next.js `output: 'standalone'` + workers adapter).
-4. Configure `wrangler.toml` with the D1 binding and deploy:
-   ```bash
-   npx @cloudflare/next-on-pages
-   wrangler pages deploy
-   ```
+This runs `prisma generate --schema=prisma/schema.edge.prisma` (generates
+the edge client with the TypeScript query compiler — no Rust binary, needed
+for Cloudflare) then `opennextjs-cloudflare build` → output in `.open-next/`.
 
-### Alternative databases
+## 4. Deploy
 
-If you prefer not to use D1, swap the Prisma datasource to any hosted DB
-(Neon/Supabase Postgres, PlanetScale MySQL, Turso SQLite). Update
-`prisma/schema.prisma` `datasource db` provider + `DATABASE_URL` accordingly.
+```bash
+bun run deploy:cf      # = build:cf && wrangler pages deploy .open-next
+```
+
+Or from the Cloudflare dashboard (Workers & Pages → Pages):
+- Framework preset: Next.js
+- Build command: `bun run build:cf`
+- Build output directory: `.open-next`
+- Environment: add D1 binding → Variable name `D1`, D1 database `trade-journal`
+
+## 5. Preview locally on Cloudflare runtime (optional)
+
+```bash
+bun run preview:cf     # = build:cf && wrangler pages dev .open-next
+```
+
+This serves the Cloudflare build locally with the local D1 copy.
+
+## How the D1 wiring works
+
+- `wrangler.toml` — D1 binding `D1` → your database.
+- `prisma/schema.edge.prisma` — `previewFeatures = ["queryCompiler"]`
+  (edge client, no Rust engine).
+- `src/lib/db.ts` — `getDb()`:
+  - on Cloudflare: `getCloudflareContext()` → `PrismaD1(env.D1)` adapter
+    → `new PrismaClient({ adapter })`.
+  - locally: falls back to the regular SQLite `PrismaClient`.
+- API routes (`/api/trades`, `/api/trades/[id]`) call `const db = await getDb()`
+  so the same code works in both environments.
 
 ## Theme system
-
-The app ships with 8 color themes (4 dark + 4 light) selectable from the
-palette dropdown in the top nav. The selected theme persists in
-`localStorage` (key: `goldscalp-palette`). All theme tokens are CSS variables
-defined in `src/app/globals.css` under `[data-palette="..."]` blocks.
+8 color themes (4 dark + 4 light) from the palette dropdown in the top nav.
+Persists in `localStorage` (`goldscalp-palette`). Tokens in
+`src/app/globals.css` under `[data-palette="..."]`.
 
 ## Notes
-
-- `public/uploads/` — stores trade screenshot uploads at runtime (starts empty).
-- `db/custom.db` — the SQLite file (starts empty; recreated by `db:push`).
-- The Research view contains a built-in XAUUSD strategy case study (static
-  content) and an embedded TradingView chart.
+- `public/uploads/` — trade screenshot uploads at runtime (starts empty).
+  On Cloudflare, file uploads to `public/` won't persist — consider
+  Cloudflare R2 for screenshot storage in production.
+- `db/custom.db` — local SQLite (empty; recreated by `db:push`). Not used
+  on Cloudflare (D1 replaces it).

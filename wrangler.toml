@@ -1,0 +1,11 @@
+name = "trade-journal"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Cloudflare Pages / Workers — Next.js (OpenNext) output
+pages_build_output_dir = ".open-next"
+
+[[d1_databases]]
+binding = "D1"
+database_name = "trade-journal"
+database_id = "85f9c436-cb2e-41e7-9534-49f20812a3e7"

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 import {
   type TradeInput,
   type TradeSide,
@@ -122,6 +122,7 @@ export async function PATCH(
   }
 
   try {
+    const db = await getDb()
     const updated = await db.trade.update({ where: { id }, data })
     return NextResponse.json(updated)
   } catch (e) {
@@ -143,6 +144,7 @@ export async function DELETE(
   }
 
   try {
+    const db = await getDb()
     await db.trade.delete({ where: { id } })
     return NextResponse.json({ ok: true })
   } catch (e) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 import {
   type TradeInput,
   type TradeSide,
@@ -49,6 +49,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const db = await getDb()
     const rows = await db.trade.findMany({
       where,
       orderBy: { tradeAt: 'desc' },
@@ -114,6 +115,7 @@ export async function POST(req: NextRequest) {
       : body.mood.toString().slice(0, 32) || null
 
   try {
+    const db = await getDb()
     const created = await db.trade.create({
       data: {
         tradeAt,
