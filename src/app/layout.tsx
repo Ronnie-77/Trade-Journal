@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Z.ai Quant Lab" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/icon.svg",
   },
   openGraph: {
     title: "XAUUSD M5 Scalper — High Win-Rate Strategy",

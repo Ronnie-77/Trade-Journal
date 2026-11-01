@@ -66,14 +66,7 @@ export const STRATEGY_OPTIONS = [
   'Reversal',
   'News',
   'Range',
-] as const
-
-export const MOOD_OPTIONS = [
-  'Calm',
-  'Confident',
-  'Hesitant',
-  'FOMO',
-  'Revenge',
+  'Scalp Indicator',
 ] as const
 
 export const RESULT_LABEL: Record<TradeResult, string> = {

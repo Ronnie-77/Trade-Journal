@@ -47,7 +47,7 @@ const EMPTY: TradeEntryValues = {
   lotSize: '',
   side: 'BUY',
   result: 'TP',
-  magnitude: '90',
+  magnitude: '',
   plannedRisk: '',
   strategy: '',
   mood: '',

@@ -9,7 +9,6 @@ import {
   type ImageKind,
   signedAmount,
   STRATEGY_OPTIONS,
-  MOOD_OPTIONS,
 } from '@/lib/trade-types'
 
 export interface TradeEntryValues {
@@ -208,19 +207,13 @@ export function TradeEntryBody({ values, onChange, amountError }: Props) {
           Context <span>optional</span>
         </h2>
         <span className="lbl">Strategy</span>
-        <div style={{ marginBottom: 16 }}>
+        <div>
           <Chips
             options={[...STRATEGY_OPTIONS]}
             value={values.strategy}
             onChange={(v) => onChange({ strategy: v })}
           />
         </div>
-        <span className="lbl">How did you feel?</span>
-        <Chips
-          options={[...MOOD_OPTIONS]}
-          value={values.mood}
-          onChange={(v) => onChange({ mood: v })}
-        />
       </section>
 
       {/* NOTES */}
