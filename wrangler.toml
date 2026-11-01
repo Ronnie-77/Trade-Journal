@@ -2,9 +2,14 @@ name = "trade-journal"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
-# Cloudflare Pages / Workers — Next.js (OpenNext) output
-pages_build_output_dir = ".open-next"
+# OpenNext build output — Worker entry point + static assets
+main = ".open-next/worker.js"
 
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+# Cloudflare D1 database binding
 [[d1_databases]]
 binding = "D1"
 database_name = "trade-journal"
