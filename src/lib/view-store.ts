@@ -3,7 +3,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export type ViewKey = 'portfolio' | 'analytics' | 'research' | 'account'
+export type ViewKey = 'portfolio' | 'analytics' | 'account'
 
 interface ViewState {
   view: ViewKey

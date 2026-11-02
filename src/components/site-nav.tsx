@@ -1,20 +1,22 @@
 'use client'
 
 import * as React from 'react'
-import { TrendingUp, BookOpen, BarChart3, Wallet, UserCircle } from 'lucide-react'
+import { TrendingUp, Wallet, BarChart3, UserCircle } from 'lucide-react'
 import { useViewStore, type ViewKey } from '@/lib/view-store'
 import { cn } from '@/lib/utils'
 
 const VIEWS: Array<{ key: ViewKey; label: string; icon: React.ElementType }> = [
   { key: 'portfolio', label: 'Portfolio', icon: Wallet },
   { key: 'analytics', label: 'Analytics', icon: BarChart3 },
-  { key: 'research', label: 'Research', icon: BookOpen },
   { key: 'account', label: 'Account', icon: UserCircle },
 ]
 
 export function SiteNav() {
   const view = useViewStore((s) => s.view)
   const setView = useViewStore((s) => s.setView)
+
+  const mainViews = VIEWS.filter(v => v.key !== 'account')
+  const accountView = VIEWS.find(v => v.key === 'account')!
 
   return (
     <>
@@ -31,9 +33,9 @@ export function SiteNav() {
             </span>
           </div>
 
-          {/* View switcher */}
+          {/* Centered view switcher */}
           <nav className="flex items-center gap-1 rounded-lg border border-border/50 bg-muted/40 p-1">
-            {VIEWS.map((v) => {
+            {mainViews.map((v) => {
               const active = view === v.key
               return (
                 <button
@@ -53,6 +55,21 @@ export function SiteNav() {
               )
             })}
           </nav>
+
+          {/* Account to the right corner */}
+          <button
+            onClick={() => setView(accountView.key)}
+            aria-current={view === accountView.key ? 'page' : undefined}
+            className={cn(
+              'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all sm:text-sm',
+              view === accountView.key
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-border/50 text-muted-foreground hover:bg-accent hover:text-foreground'
+            )}
+          >
+            <accountView.icon className="h-3.5 w-3.5" />
+            {accountView.label}
+          </button>
         </div>
       </header>
 

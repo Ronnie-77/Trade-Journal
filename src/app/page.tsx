@@ -3,19 +3,24 @@
 import * as React from 'react'
 import { useAppSession, signIn, signOut } from '@/lib/use-session'
 import { SiteNav } from '@/components/site-nav'
-import { Footer, MinimalFooter } from '@/components/sections/footer'
+import { MinimalFooter } from '@/components/sections/footer'
 import { PortfolioSection } from '@/components/sections/portfolio'
 import { AnalyticsSection } from '@/components/sections/analytics'
-import { ResearchView } from '@/components/sections/research-view'
 import { AccountSection } from '@/components/sections/account'
 import { useViewStore } from '@/lib/view-store'
 import { TrendingUp } from 'lucide-react'
 
 export default function Home() {
   const view = useViewStore((s) => s.view)
+  const setView = useViewStore((s) => s.setView)
   const { data: session, status } = useAppSession()
 
-  // Loading while checking session
+  React.useEffect(() => {
+    if (session && view === 'account') {
+      setView('portfolio')
+    }
+  }, [session, view, setView])
+
   if (status === 'loading') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -24,24 +29,34 @@ export default function Home() {
     )
   }
 
-  // Not authenticated → login page
   if (!session) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
-        <div className="w-full max-w-sm space-y-8 text-center">
-          <div className="flex flex-col items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/15 ring-1 ring-primary/30">
-              <TrendingUp className="h-8 w-8 text-primary" />
+      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background px-4">
+        {/* Glowing effects */}
+        <div
+          className="pointer-events-none absolute -left-32 top-1/4 h-96 w-96 rounded-full opacity-20 blur-[100px]"
+          style={{ background: 'radial-gradient(circle, var(--primary), transparent 70%)' }}
+        />
+        <div
+          className="pointer-events-none absolute -right-32 bottom-1/4 h-96 w-96 rounded-full opacity-15 blur-[100px]"
+          style={{ background: 'radial-gradient(circle, var(--chart-2), transparent 70%)' }}
+        />
+
+        {/* Login content */}
+        <div className="relative z-10 w-full max-w-sm space-y-10 text-center">
+          <div className="flex flex-col items-center gap-5">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/15 ring-1 ring-primary/30">
+              <TrendingUp className="h-10 w-10 text-primary" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">Trade Journal</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Track. Analyze. Improve.</p>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold tracking-tight">Trade Journal</h1>
+              <p className="text-sm text-muted-foreground">Track. Analyze. Improve.</p>
             </div>
           </div>
 
           <button
             onClick={() => signIn()}
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-border/60 bg-card px-4 py-3 text-sm font-medium shadow-sm transition-all hover:bg-accent hover:shadow-md"
+            className="flex w-full items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card px-6 py-4 text-sm font-medium shadow-lg transition-all hover:bg-accent hover:shadow-xl"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -60,17 +75,15 @@ export default function Home() {
     )
   }
 
-  // Authenticated → show app
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <SiteNav />
       <main className="flex-1 overflow-y-auto overflow-x-hidden pb-16 sm:pb-0">
         {view === 'portfolio' ? <PortfolioSection /> :
          view === 'analytics' ? <AnalyticsSection /> :
-         view === 'account' ? <AccountSection /> :
-         <ResearchView />}
+         <AccountSection />}
       </main>
-      {view === 'research' ? <Footer /> : <MinimalFooter />}
+      <MinimalFooter />
     </div>
   )
 }

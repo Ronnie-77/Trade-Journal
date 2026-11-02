@@ -30,23 +30,30 @@ export function useAppSession() {
   const [session, setSession] = React.useState<AppSession | null>(null)
   const [loading, setLoading] = React.useState(true)
 
+  // Check session on mount AND when URL changes (e.g. after OAuth redirect)
   React.useEffect(() => {
-    // Read session cookie on client
-    const cookies = document.cookie.split(';')
-    const sessionCookie = cookies
-      .find(c => c.trim().startsWith('session='))
-      ?.split('=')[1]
-    setSession(parseSession(sessionCookie))
-    setLoading(false)
+    const checkSession = () => {
+      const cookies = document.cookie.split(';')
+      const sessionCookie = cookies
+        .find(c => c.trim().startsWith('session='))
+        ?.split('=').slice(1).join('=')
+      setSession(parseSession(sessionCookie))
+      setLoading(false)
+    }
+    checkSession()
   }, [])
 
   return { data: session, status: loading ? 'loading' : session ? 'authenticated' : 'unauthenticated' }
 }
 
 export function signIn() {
+  // Clear any stale localStorage before redirecting
+  try { localStorage.removeItem('goldscalp-view') } catch {}
   window.location.href = '/api/auth/signin/google'
 }
 
 export function signOut() {
+  // Clear localStorage so next login starts fresh
+  try { localStorage.removeItem('goldscalp-view') } catch {}
   window.location.href = '/api/auth/signout'
 }

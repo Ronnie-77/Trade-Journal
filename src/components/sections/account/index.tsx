@@ -2,12 +2,13 @@
 
 import * as React from 'react'
 import { useAppSession, signOut } from '@/lib/use-session'
-import { User, Palette, LogOut, Check, Save } from 'lucide-react'
+import { User, Palette, LogOut, Check, ChevronDown, Save, BookOpen, TrendingUp, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { usePaletteStore, PALETTES, getPalette, type PaletteKey } from '@/lib/palette-store'
 import { useToast } from '@/hooks/use-toast'
+import { ResearchView } from '@/components/sections/research-view'
 import { cn } from '@/lib/utils'
 
 function Swatch({ colors }: { colors: [string, string, string] }) {
@@ -29,6 +30,8 @@ export function AccountSection() {
 
   const [name, setName] = React.useState(session?.user?.name || '')
   const [savedName, setSavedName] = React.useState(session?.user?.name || '')
+  const [themeOpen, setThemeOpen] = React.useState(false)
+  const [showResearch, setShowResearch] = React.useState(false)
 
   React.useEffect(() => {
     if (session?.user?.name) {
@@ -50,6 +53,23 @@ export function AccountSection() {
 
   const userInitial = (name || session?.user?.name || '?')[0]?.toUpperCase()
 
+  // Research overlay
+  if (showResearch) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+        <button
+          onClick={() => setShowResearch(false)}
+          className="btn ghost mb-6"
+          style={{ padding: '6px 14px' }}
+        >
+          <ArrowLeft className="mr-1" style={{ width: 14, height: 14 }} />
+          Back to Account
+        </button>
+        <ResearchView />
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
       <h1 className="mb-6 text-xl font-bold tracking-tight">Account</h1>
@@ -57,7 +77,6 @@ export function AccountSection() {
       {/* User profile card */}
       <Card className="mb-6 border-border/60">
         <CardContent className="flex items-center gap-4 px-5 py-5">
-          {/* Avatar */}
           <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-primary/15 text-xl font-bold text-primary ring-2 ring-primary/30">
             {userInitial}
           </div>
@@ -69,6 +88,22 @@ export function AccountSection() {
               {session?.user?.email}
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Research access */}
+      <Card className="mb-6 border-border/60">
+        <CardContent className="px-5 py-4">
+          <button
+            onClick={() => setShowResearch(true)}
+            className="flex w-full items-center justify-between text-sm"
+          >
+            <span className="flex items-center gap-3">
+              <BookOpen className="h-5 w-5 text-primary" />
+              <span className="font-medium">XAUUSD Research &amp; Strategy</span>
+            </span>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </button>
         </CardContent>
       </Card>
 
@@ -105,7 +140,7 @@ export function AccountSection() {
         </CardContent>
       </Card>
 
-      {/* Theme selector */}
+      {/* Theme selector — dropdown */}
       <Card className="mb-6 border-border/60">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
@@ -114,31 +149,39 @@ export function AccountSection() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {PALETTES.map((p) => (
-              <button
-                key={p.key}
-                onClick={() => setPalette(p.key as PaletteKey)}
-                className={cn(
-                  'flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition-all',
-                  palette === p.key
-                    ? 'border-primary bg-primary/5 ring-1 ring-primary/30'
-                    : 'border-border/60 hover:border-primary/40 hover:bg-accent'
-                )}
-              >
-                <span className="flex items-center gap-3">
-                  <Swatch colors={p.swatch} />
-                  <span className="font-medium">{p.label}</span>
-                </span>
-                {palette === p.key && (
-                  <Check className="h-4 w-4 text-primary" />
-                )}
-              </button>
-            ))}
+          <div className="relative">
+            <button
+              onClick={() => setThemeOpen(v => !v)}
+              className="flex w-full items-center justify-between rounded-lg border border-border/60 bg-background px-4 py-3 text-sm transition-all hover:border-primary/40"
+            >
+              <span className="flex items-center gap-3">
+                <Swatch colors={current.swatch} />
+                <span className="font-medium">{current.label}</span>
+                <span className="text-xs text-muted-foreground">({current.mode})</span>
+              </span>
+              <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform', themeOpen && 'rotate-180')} />
+            </button>
+            {themeOpen && (
+              <div className="mt-1 max-h-64 overflow-y-auto rounded-lg border border-border/60 bg-popover shadow-md">
+                {PALETTES.map(p => (
+                  <button
+                    key={p.key}
+                    onClick={() => { setPalette(p.key as PaletteKey); setThemeOpen(false) }}
+                    className={cn(
+                      'flex w-full items-center justify-between border-b border-border/40 px-4 py-2.5 text-sm transition-colors last:border-0',
+                      palette === p.key ? 'bg-primary/5' : 'hover:bg-accent'
+                    )}
+                  >
+                    <span className="flex items-center gap-3">
+                      <Swatch colors={p.swatch} />
+                      <span className="font-medium">{p.label}</span>
+                    </span>
+                    {palette === p.key && <Check className="h-4 w-4 text-primary" />}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <p className="mt-3 text-xs text-muted-foreground">
-            Current: <span className="font-medium text-foreground">{current.label}</span> ({current.mode})
-          </p>
         </CardContent>
       </Card>
 
@@ -148,7 +191,7 @@ export function AccountSection() {
           <Button
             variant="outline"
             className="w-full text-rose-500 hover:bg-rose-500/10 hover:text-rose-600"
-            onClick={() => signOut({ callbackUrl: '/' })}
+            onClick={() => signOut()}
           >
             <LogOut className="mr-2 h-4 w-4" />
             Sign out

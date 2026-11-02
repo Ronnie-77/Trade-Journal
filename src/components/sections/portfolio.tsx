@@ -36,22 +36,34 @@ export function PortfolioSection() {
   return (
     <div className="journal relative pb-16 sm:pb-0">
       <section className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-7">
-        {/* Header — stats only */}
+        {/* Header — stats + New Entry button inline */}
         <header
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            gap: 16,
+            alignItems: 'center',
+            gap: 12,
             flexWrap: 'wrap',
             marginBottom: 16,
           }}
         >
-          <div>
-            <h1 className="j-title">Portfolio</h1>
-            <p className="j-sub">Your trading journal</p>
+          <div className="flex items-center gap-4">
+            <div>
+              <h1 className="j-title">Portfolio</h1>
+              <p className="j-sub">Your trading journal</p>
+            </div>
+            {/* New Entry button next to title */}
+            <button
+              onClick={() => setFormOpen((v) => !v)}
+              className="btn"
+              style={{ padding: '7px 16px' }}
+            >
+              <Plus style={{ width: 15, height: 15 }} />
+              {formOpen ? 'Close' : 'New Entry'}
+            </button>
           </div>
-          <div className="stats">
+          {/* Stats — centered row on mobile, inline on desktop */}
+          <div className="stats flex w-full justify-center sm:w-auto sm:justify-end">
             <div className="stat">
               <small>Net P&amp;L</small>
               <b className="num" style={{ color: netColor }}>
@@ -72,21 +84,6 @@ export function PortfolioSection() {
             </div>
           </div>
         </header>
-
-        {/* Add New Trade toggle button */}
-        <button
-          onClick={() => setFormOpen((v) => !v)}
-          className="btn"
-          style={{
-            width: '100%',
-            marginBottom: formOpen ? 16 : 20,
-            justifyContent: 'center',
-            padding: '10px 18px',
-          }}
-        >
-          <Plus style={{ width: 16, height: 16 }} />
-          {formOpen ? 'Close Entry Form' : 'Add New Trade Entry'}
-        </button>
 
         {/* Form + sidebar (expand/collapse) */}
         {formOpen && <TradeForm />}
