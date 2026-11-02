@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
 
     const res = NextResponse.redirect(APP_URL)
     res.cookies.set('session', sessionB64, {
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
       sameSite: 'lax',
       maxAge: 30 * 24 * 60 * 60, // 30 days
