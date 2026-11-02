@@ -1,8 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { TrendingUp, Wallet, BarChart3, UserCircle } from 'lucide-react'
+import { TrendingUp, Wallet, BarChart3, UserCircle, Plus, X } from 'lucide-react'
 import { useViewStore, type ViewKey } from '@/lib/view-store'
+import { useFormStore } from '@/lib/form-store'
 import { cn } from '@/lib/utils'
 
 const VIEWS: Array<{ key: ViewKey; label: string; icon: React.ElementType }> = [
@@ -14,6 +15,8 @@ const VIEWS: Array<{ key: ViewKey; label: string; icon: React.ElementType }> = [
 export function SiteNav() {
   const view = useViewStore((s) => s.view)
   const setView = useViewStore((s) => s.setView)
+  const formOpen = useFormStore((s) => s.formOpen)
+  const toggleForm = useFormStore((s) => s.toggleForm)
 
   const mainViews = VIEWS.filter(v => v.key !== 'account')
   const accountView = VIEWS.find(v => v.key === 'account')!
@@ -33,25 +36,40 @@ export function SiteNav() {
             </span>
           </div>
 
-          {/* Centered view switcher */}
+          {/* Centered: Portfolio | New Entry | Analytics */}
           <nav className="flex items-center gap-1 rounded-lg border border-border/50 bg-muted/40 p-1">
-            {mainViews.map((v) => {
+            {mainViews.map((v, i) => {
               const active = view === v.key
               return (
-                <button
-                  key={v.key}
-                  onClick={() => setView(v.key)}
-                  aria-current={active ? 'page' : undefined}
-                  className={cn(
-                    'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all sm:text-sm',
-                    active
-                      ? 'bg-primary text-primary-foreground shadow-sm'
-                      : 'text-muted-foreground hover:bg-background hover:text-foreground'
+                <React.Fragment key={v.key}>
+                  {i === 1 && (
+                    <button
+                      onClick={toggleForm}
+                      className={cn(
+                        'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all sm:text-sm',
+                        formOpen
+                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          : 'text-muted-foreground hover:bg-background hover:text-foreground'
+                      )}
+                    >
+                      {formOpen ? <X className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+                      {formOpen ? 'Close' : 'New Entry'}
+                    </button>
                   )}
-                >
-                  <v.icon className="h-3.5 w-3.5" />
-                  {v.label}
-                </button>
+                  <button
+                    onClick={() => setView(v.key)}
+                    aria-current={active ? 'page' : undefined}
+                    className={cn(
+                      'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all sm:text-sm',
+                      active
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'text-muted-foreground hover:bg-background hover:text-foreground'
+                    )}
+                  >
+                    <v.icon className="h-3.5 w-3.5" />
+                    {v.label}
+                  </button>
+                </React.Fragment>
               )
             })}
           </nav>
