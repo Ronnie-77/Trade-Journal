@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import {
   type TradeInput,
   type TradeSide,
@@ -123,6 +125,13 @@ export async function PATCH(
 
   try {
     const db = await getDb()
+    // Verify ownership before allowing edit
+    const session = await getServerSession(authOptions)
+    const userEmail = session?.user?.email
+    const existing = await db.trade.findUnique({ where: { id } })
+    if (!existing || existing.userId !== userEmail) {
+      return NextResponse.json({ error: 'Not found or unauthorized' }, { status: 404 })
+    }
     const updated = await db.trade.update({ where: { id }, data })
     return NextResponse.json(updated)
   } catch (e) {
@@ -145,6 +154,13 @@ export async function DELETE(
 
   try {
     const db = await getDb()
+    // Verify ownership before allowing delete
+    const session = await getServerSession(authOptions)
+    const userEmail = session?.user?.email
+    const existing = await db.trade.findUnique({ where: { id } })
+    if (!existing || existing.userId !== userEmail) {
+      return NextResponse.json({ error: 'Not found or unauthorized' }, { status: 404 })
+    }
     await db.trade.delete({ where: { id } })
     return NextResponse.json({ ok: true })
   } catch (e) {

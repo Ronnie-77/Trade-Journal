@@ -247,15 +247,15 @@ export function TradesTable({ trades }: { trades: Trade[] }) {
           <Table style={{ tableLayout: 'fixed', width: '100%' }}>
             <TableHeader className="sticky top-0 z-10 bg-card/95 backdrop-blur">
               <TableRow className="border-border/60 hover:bg-transparent">
-                <SortHeader k="date" label="Date" sortKey={sortKey} sortDir={sortDir} onToggle={toggleSort} className="w-[150px]" />
-                <SortHeader k="time" label="Time" sortKey={sortKey} sortDir={sortDir} onToggle={toggleSort} className="w-[84px]" />
-                <SortHeader k="instrument" label="Instrument" sortKey={sortKey} sortDir={sortDir} onToggle={toggleSort} className="w-[110px]" />
-                <SortHeader k="lotSize" label="Lot" sortKey={sortKey} sortDir={sortDir} onToggle={toggleSort} className="w-[72px] text-right" />
-                <SortHeader k="side" label="Side" sortKey={sortKey} sortDir={sortDir} onToggle={toggleSort} className="w-[72px]" />
-                <SortHeader k="result" label="Result" sortKey={sortKey} sortDir={sortDir} onToggle={toggleSort} className="w-[65px]" />
-                <SortHeader k="amount" label="Amount" sortKey={sortKey} sortDir={sortDir} onToggle={toggleSort} className="w-[100px] text-right" />
+                <SortHeader k="date" label="Date" sortKey={sortKey} sortDir={sortDir} onToggle={toggleSort} className="w-[130px]" />
+                <SortHeader k="time" label="Time" sortKey={sortKey} sortDir={sortDir} onToggle={toggleSort} className="w-[60px]" />
+                <SortHeader k="instrument" label="Instrument" sortKey={sortKey} sortDir={sortDir} onToggle={toggleSort} className="w-[90px]" />
+                <SortHeader k="lotSize" label="Lot" sortKey={sortKey} sortDir={sortDir} onToggle={toggleSort} className="w-[56px] text-right" />
+                <SortHeader k="side" label="Side" sortKey={sortKey} sortDir={sortDir} onToggle={toggleSort} className="w-[60px]" />
+                <SortHeader k="result" label="Result" sortKey={sortKey} sortDir={sortDir} onToggle={toggleSort} className="w-[56px]" />
+                <SortHeader k="amount" label="Amount" sortKey={sortKey} sortDir={sortDir} onToggle={toggleSort} className="w-[80px] text-right" />
                 <TableHead>Comment</TableHead>
-                <TableHead className="w-[96px] text-right">Actions</TableHead>
+                <TableHead className="w-[80px] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

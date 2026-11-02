@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import {
   type TradeInput,
   type TradeSide,
@@ -28,11 +30,16 @@ function normalizeAmount(result: TradeResult, raw: number): number {
 export async function GET(req: NextRequest) {
   const url = req.nextUrl.searchParams
 
+  // Get the authenticated user's email for data isolation
+  const session = await getServerSession(authOptions)
+  const userEmail = session?.user?.email
+
   const where: {
     side?: string
     result?: string
     tradeAt?: { gte?: Date; lte?: Date }
-  } = {}
+    userId?: string | null
+  } = { userId: userEmail }
 
   const side = url.get('side')
   if (side && side !== 'ALL' && isSide(side)) where.side = side
@@ -114,6 +121,10 @@ export async function POST(req: NextRequest) {
       ? null
       : body.mood.toString().slice(0, 32) || null
 
+  // Get the authenticated user's email
+  const session = await getServerSession(authOptions)
+  const userEmail = session?.user?.email
+
   try {
     const db = await getDb()
     const created = await db.trade.create({
@@ -130,6 +141,7 @@ export async function POST(req: NextRequest) {
         plannedRisk,
         strategy,
         mood,
+        userId: userEmail,
       },
     })
     return NextResponse.json(created, { status: 201 })

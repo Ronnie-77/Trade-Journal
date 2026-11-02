@@ -8,6 +8,7 @@ import {
   ThemePaletteManager,
   PaletteScript,
 } from "@/components/theme-palette-manager";
+import { AppSessionProvider } from "@/components/session-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -71,9 +72,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProvider>
-            <ThemePaletteManager />
-            {children}
-            <Toaster />
+            <AppSessionProvider>
+              <ThemePaletteManager />
+              {children}
+              <Toaster />
+            </AppSessionProvider>
           </QueryProvider>
         </ThemeProvider>
       </body>
