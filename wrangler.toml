@@ -2,8 +2,13 @@ name = "trade-journal"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
-# Cloudflare Pages — build output directory
+# Worker entry point + static assets (for wrangler deploy)
+main = ".open-next/worker.js"
 pages_build_output_dir = ".open-next"
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
 
 # Non-secret environment variables
 [vars]
