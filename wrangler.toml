@@ -8,9 +8,11 @@ main = ".open-next/worker.js"
 [assets]
 directory = ".open-next/assets"
 
-# Non-secret environment variables
+# All environment variables (deployed with the Worker)
 [vars]
 GOOGLE_CLIENT_ID = "806108632707-r70ucnnhrhs75c4ek88qbj8g9hh46jll.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET = "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"
+NEXTAUTH_SECRET = "tJ8nK2xL5mP9qR3vW7yZ4bN6cF1hD0gS"
 NEXTAUTH_URL = "https://trade-journal.ronniekhan77a.workers.dev"
 
 # Cloudflare D1 database binding
