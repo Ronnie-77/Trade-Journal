@@ -8,12 +8,14 @@ main = ".open-next/worker.js"
 [assets]
 directory = ".open-next/assets"
 
-# ALL environment variables — repo is private
+# Non-secret environment variables
 [vars]
-GOOGLE_CLIENT_ID = "77596752479-92a7idn0inm5ltd7s6aira0sqlob1d5t.apps.googleusercontent.com"
-GOOGLE_CLIENT_SECRET = "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"
-NEXTAUTH_SECRET = "tJ8nK2xL5mP9qR3vW7yZ4bN6cF1hD0gS"
-NEXTAUTH_URL = "https://trade-journal.ronniekhan77a.workers.dev"
+# Google secrets are now managed via Cloudflare Dashboard
+# NEXTAUTH_SECRET and other secrets are also managed via Cloudflare Dashboard
+
+
+# GOOGLE_CLIENT_SECRET → set via Cloudflare Dashboard (Workers → Settings → Variables → Add Secret)
+# Value: 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
 
 # Cloudflare D1 database binding
 [[d1_databases]]
