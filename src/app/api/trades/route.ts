@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getSessionUser } from '@/lib/cookie-session'
 import {
   type TradeInput,
   type TradeSide,
@@ -31,8 +30,8 @@ export async function GET(req: NextRequest) {
   const url = req.nextUrl.searchParams
 
   // Get the authenticated user's email for data isolation
-  const session = await getServerSession(authOptions)
-  const userEmail = session?.user?.email
+  const user = getSessionUser(req)
+  const userEmail = user?.email ?? undefined
 
   const where: {
     side?: string
@@ -122,8 +121,8 @@ export async function POST(req: NextRequest) {
       : body.mood.toString().slice(0, 32) || null
 
   // Get the authenticated user's email
-  const session = await getServerSession(authOptions)
-  const userEmail = session?.user?.email
+  const user = getSessionUser(req)
+  const userEmail = user?.email ?? undefined
 
   try {
     const db = await getDb()

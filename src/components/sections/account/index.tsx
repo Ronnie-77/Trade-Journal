@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useSession, signOut } from 'next-auth/react'
+import { useAppSession, signOut } from '@/lib/use-session'
 import { User, Palette, LogOut, Check, Save } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,7 +21,7 @@ function Swatch({ colors }: { colors: [string, string, string] }) {
 }
 
 export function AccountSection() {
-  const { data: session } = useSession()
+  const { data: session } = useAppSession()
   const { toast } = useToast()
   const palette = usePaletteStore((s) => s.palette)
   const setPalette = usePaletteStore((s) => s.setPalette)

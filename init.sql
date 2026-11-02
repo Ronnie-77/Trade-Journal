@@ -33,6 +33,7 @@ CREATE TABLE "Trade" (
     "plannedRisk" REAL,
     "strategy" TEXT,
     "mood" TEXT,
+    "userId" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

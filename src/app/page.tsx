@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { useAppSession, signIn, signOut } from '@/lib/use-session'
 import { SiteNav } from '@/components/site-nav'
 import { Footer, MinimalFooter } from '@/components/sections/footer'
 import { PortfolioSection } from '@/components/sections/portfolio'
@@ -13,42 +13,34 @@ import { TrendingUp } from 'lucide-react'
 
 export default function Home() {
   const view = useViewStore((s) => s.view)
-  const { data: session, status } = useSession()
-  const [mounted, setMounted] = React.useState(false)
-  React.useEffect(() => setMounted(true), [])
+  const { data: session, status } = useAppSession()
 
-  // Show loading while session is being checked
-  if (!mounted || status === 'loading') {
+  // Loading while checking session
+  if (status === 'loading') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="flex h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     )
   }
 
-  // Not authenticated → show login page
-  if (status === 'unauthenticated' || !session) {
+  // Not authenticated → login page
+  if (!session) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
         <div className="w-full max-w-sm space-y-8 text-center">
-          {/* Logo */}
           <div className="flex flex-col items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/15 ring-1 ring-primary/30">
               <TrendingUp className="h-8 w-8 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">
-                Trade Journal
-              </h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Track. Analyze. Improve.
-              </p>
+              <h1 className="text-2xl font-bold tracking-tight">Trade Journal</h1>
+              <p className="mt-1 text-sm text-muted-foreground">Track. Analyze. Improve.</p>
             </div>
           </div>
 
-          {/* Google sign-in button */}
           <button
-            onClick={() => signIn('google')}
+            onClick={() => signIn()}
             className="flex w-full items-center justify-center gap-3 rounded-xl border border-border/60 bg-card px-4 py-3 text-sm font-medium shadow-sm transition-all hover:bg-accent hover:shadow-md"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -68,23 +60,16 @@ export default function Home() {
     )
   }
 
-  // Authenticated → show the app
+  // Authenticated → show app
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <SiteNav />
-      {/* Independent scrollable content per view */}
       <main className="flex-1 overflow-y-auto overflow-x-hidden pb-16 sm:pb-0">
-        {view === 'portfolio' ? (
-          <PortfolioSection />
-        ) : view === 'analytics' ? (
-          <AnalyticsSection />
-        ) : view === 'account' ? (
-          <AccountSection />
-        ) : (
-          <ResearchView />
-        )}
+        {view === 'portfolio' ? <PortfolioSection /> :
+         view === 'analytics' ? <AnalyticsSection /> :
+         view === 'account' ? <AccountSection /> :
+         <ResearchView />}
       </main>
-      {/* Full footer (with disclaimer) only on Research; minimal elsewhere */}
       {view === 'research' ? <Footer /> : <MinimalFooter />}
     </div>
   )
