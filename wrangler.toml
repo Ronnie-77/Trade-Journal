@@ -2,8 +2,11 @@ name = "trade-journal"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
-# Pages output directory — serves both the Worker and static assets
-pages_build_output_dir = ".open-next"
+# Workers + Static Assets (not Pages)
+main = ".open-next/worker.js"
+
+[assets]
+directory = ".open-next/assets"
 
 # Non-secret environment variables
 [vars]
