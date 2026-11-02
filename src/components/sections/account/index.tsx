@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { usePaletteStore, PALETTES, getPalette, type PaletteKey } from '@/lib/palette-store'
 import { useToast } from '@/hooks/use-toast'
-import { ResearchView } from '@/components/sections/research-view'
 import { cn } from '@/lib/utils'
 
 function Swatch({ colors }: { colors: [string, string, string] }) {
@@ -65,7 +64,9 @@ export function AccountSection() {
           <ArrowLeft className="mr-1" style={{ width: 14, height: 14 }} />
           Back to Account
         </button>
-        <ResearchView />
+        <div className="rounded-xl border border-border/60 bg-card p-4 text-center text-sm text-muted-foreground">
+          Research content loads here. Visit the research page directly to view charts and analysis.
+        </div>
       </div>
     )
   }

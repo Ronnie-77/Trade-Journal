@@ -16,10 +16,11 @@ export default function Home() {
   const { data: session, status } = useAppSession()
 
   React.useEffect(() => {
-    if (session && view === 'account') {
+    // Reset invalid persisted view (e.g. 'research' from old code)
+    if (view !== 'portfolio' && view !== 'analytics' && view !== 'account') {
       setView('portfolio')
     }
-  }, [session, view, setView])
+  }, [view, setView])
 
   if (status === 'loading') {
     return (
@@ -32,7 +33,6 @@ export default function Home() {
   if (!session) {
     return (
       <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background px-4">
-        {/* Glowing effects */}
         <div
           className="pointer-events-none absolute -left-32 top-1/4 h-96 w-96 rounded-full opacity-20 blur-[100px]"
           style={{ background: 'radial-gradient(circle, var(--primary), transparent 70%)' }}
@@ -41,8 +41,6 @@ export default function Home() {
           className="pointer-events-none absolute -right-32 bottom-1/4 h-96 w-96 rounded-full opacity-15 blur-[100px]"
           style={{ background: 'radial-gradient(circle, var(--chart-2), transparent 70%)' }}
         />
-
-        {/* Login content */}
         <div className="relative z-10 w-full max-w-sm space-y-10 text-center">
           <div className="flex flex-col items-center gap-5">
             <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/15 ring-1 ring-primary/30">
@@ -53,7 +51,6 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">Track. Analyze. Improve.</p>
             </div>
           </div>
-
           <button
             onClick={() => signIn()}
             className="flex w-full items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card px-6 py-4 text-sm font-medium shadow-lg transition-all hover:bg-accent hover:shadow-xl"
@@ -66,7 +63,6 @@ export default function Home() {
             </svg>
             Continue with Google
           </button>
-
           <p className="text-xs text-muted-foreground">
             Sign in to track your trades, view analytics, and manage your journal.
           </p>
@@ -79,9 +75,9 @@ export default function Home() {
     <div className="flex h-screen flex-col overflow-hidden">
       <SiteNav />
       <main className="flex-1 overflow-y-auto overflow-x-hidden pb-16 sm:pb-0">
-        {view === 'portfolio' ? <PortfolioSection /> :
-         view === 'analytics' ? <AnalyticsSection /> :
-         <AccountSection />}
+        {view === 'analytics' ? <AnalyticsSection /> :
+         view === 'account' ? <AccountSection /> :
+         <PortfolioSection />}
       </main>
       <MinimalFooter />
     </div>

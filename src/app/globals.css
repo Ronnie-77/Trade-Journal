@@ -443,6 +443,12 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  /* Numbers use JetBrains Mono everywhere — clean trader/financial vibe */
+  .num, .font-mono, [class*="font-mono"] {
+    font-family: var(--font-jetbrains), "SF Mono", ui-monospace, monospace !important;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
 }
 
 /* Custom scrollbar */
@@ -582,10 +588,11 @@
 }
 
 .journal .num {
-  /* Apple SF Mono on macOS, Geist Mono / ui-monospace fallback elsewhere. */
-  font-family: "SF Mono", ui-monospace, "Menlo", var(--font-geist-mono),
-    monospace;
+  /* JetBrains Mono — clean, modern monospace with trader/financial vibe. */
+  font-family: var(--font-jetbrains), "SF Mono", ui-monospace, "Menlo",
+    var(--font-geist-mono), monospace;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
 .journal h1,
@@ -837,17 +844,32 @@
 .journal .stat {
   background: var(--j-card);
   border: 1px solid var(--j-line);
-  border-radius: 0.5rem;
-  padding: 6px 11px;
-  min-width: 84px;
+  border-radius: 0.625rem;
+  padding: 8px 14px;
+  min-width: 100px;
+  flex: 1 1 0;
+  text-align: center;
 }
 .journal .stat small {
   display: block;
   color: var(--j-mute);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
+  margin-bottom: 2px;
 }
 .journal .stat b {
-  font-size: 1rem;
+  font-size: 1.125rem;
+}
+@media (max-width: 640px) {
+  .journal .stat {
+    padding: 10px 12px;
+    min-width: 0;
+  }
+  .journal .stat small {
+    font-size: 0.75rem;
+  }
+  .journal .stat b {
+    font-size: 1.25rem;
+  }
 }
 
 /* sidebar ticket */

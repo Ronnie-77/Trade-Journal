@@ -18,101 +18,134 @@ export function SiteNav() {
   const formOpen = useFormStore((s) => s.formOpen)
   const toggleForm = useFormStore((s) => s.toggleForm)
 
-  const mainViews = VIEWS.filter(v => v.key !== 'account')
-  const accountView = VIEWS.find(v => v.key === 'account')!
-
   return (
     <>
-      {/* ── Desktop nav (top bar) — hidden on mobile ── */}
-      <header className="z-50 hidden w-full border-b border-border/40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:block">
+      {/* ── Desktop nav ── */}
+      <header className="z-50 hidden w-full border-b border-border/40 bg-background/80 backdrop-blur sm:block">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-          {/* Brand */}
+          {/* Brand left */}
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15 ring-1 ring-primary/30">
               <TrendingUp className="h-4 w-4 text-primary" />
             </div>
-            <span className="font-mono text-sm font-semibold tracking-tight">
+            <span className="font-mono text-sm font-semibold">
               Trade<span className="text-primary"> Journal</span>
             </span>
           </div>
 
-          {/* Centered: Portfolio | New Entry | Analytics */}
+          {/* Center: Portfolio | New Entry | Analytics */}
           <nav className="flex items-center gap-1 rounded-lg border border-border/50 bg-muted/40 p-1">
-            {mainViews.map((v, i) => {
-              const active = view === v.key
-              return (
-                <React.Fragment key={v.key}>
-                  {i === 1 && (
-                    <button
-                      onClick={toggleForm}
-                      className={cn(
-                        'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all sm:text-sm',
-                        formOpen
-                          ? 'bg-primary text-primary-foreground shadow-sm'
-                          : 'text-muted-foreground hover:bg-background hover:text-foreground'
-                      )}
-                    >
-                      {formOpen ? <X className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
-                      {formOpen ? 'Close' : 'New Entry'}
-                    </button>
-                  )}
-                  <button
-                    onClick={() => setView(v.key)}
-                    aria-current={active ? 'page' : undefined}
-                    className={cn(
-                      'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all sm:text-sm',
-                      active
-                        ? 'bg-primary text-primary-foreground shadow-sm'
-                        : 'text-muted-foreground hover:bg-background hover:text-foreground'
-                    )}
-                  >
-                    <v.icon className="h-3.5 w-3.5" />
-                    {v.label}
-                  </button>
-                </React.Fragment>
-              )
-            })}
+            {/* Portfolio */}
+            <button
+              onClick={() => setView('portfolio')}
+              className={cn(
+                'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all sm:text-sm',
+                view === 'portfolio'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:bg-background hover:text-foreground'
+              )}
+            >
+              <Wallet className="h-3.5 w-3.5" />
+              Portfolio
+            </button>
+
+            {/* New Entry */}
+            <button
+              onClick={toggleForm}
+              className={cn(
+                'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all sm:text-sm',
+                formOpen
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:bg-background hover:text-foreground'
+              )}
+            >
+              {formOpen ? <X className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+              {formOpen ? 'Close' : 'New Entry'}
+            </button>
+
+            {/* Analytics */}
+            <button
+              onClick={() => setView('analytics')}
+              className={cn(
+                'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all sm:text-sm',
+                view === 'analytics'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:bg-background hover:text-foreground'
+              )}
+            >
+              <BarChart3 className="h-3.5 w-3.5" />
+              Analytics
+            </button>
           </nav>
 
-          {/* Account to the right corner */}
+          {/* Account right corner */}
           <button
-            onClick={() => setView(accountView.key)}
-            aria-current={view === accountView.key ? 'page' : undefined}
+            onClick={() => setView('account')}
             className={cn(
               'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all sm:text-sm',
-              view === accountView.key
+              view === 'account'
                 ? 'border-primary bg-primary/10 text-primary'
                 : 'border-border/50 text-muted-foreground hover:bg-accent hover:text-foreground'
             )}
           >
-            <accountView.icon className="h-3.5 w-3.5" />
-            {accountView.label}
+            <UserCircle className="h-3.5 w-3.5" />
+            Account
           </button>
         </div>
       </header>
 
-      {/* ── Mobile nav (bottom bar) — Android native feel ── */}
+      {/* ── Mobile bottom nav: Portfolio | New Entry | Analytics | Account ── */}
       <nav
-        className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-around border-t border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:hidden"
+        className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-around border-t border-border/40 bg-background/95 backdrop-blur sm:hidden"
         style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
-        {VIEWS.map((v) => {
-          const active = view === v.key
-          return (
-            <button
-              key={v.key}
-              onClick={() => setView(v.key)}
-              aria-current={active ? 'page' : undefined}
-              className={cn(
-                'flex flex-1 flex-col items-center gap-1 py-2.5 transition-colors',
-                active ? 'text-primary' : 'text-muted-foreground'
-              )}
-            >
-              <v.icon className="h-5 w-5" />
-              <span className="text-[10px] font-medium">{v.label}</span>
-            </button>
-          )
-        })}
+        {/* Portfolio */}
+        <button
+          onClick={() => setView('portfolio')}
+          className={cn(
+            'flex flex-1 flex-col items-center gap-1 py-2.5 transition-colors',
+            view === 'portfolio' ? 'text-primary' : 'text-muted-foreground'
+          )}
+        >
+          <Wallet className="h-5 w-5" />
+          <span className="text-[10px] font-medium">Portfolio</span>
+        </button>
+
+        {/* New Entry */}
+        <button
+          onClick={toggleForm}
+          className={cn(
+            'flex flex-1 flex-col items-center gap-1 py-2.5 transition-colors',
+            formOpen ? 'text-primary' : 'text-muted-foreground'
+          )}
+        >
+          {formOpen ? <X className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+          <span className="text-[10px] font-medium">{formOpen ? 'Close' : 'New Entry'}</span>
+        </button>
+
+        {/* Analytics */}
+        <button
+          onClick={() => setView('analytics')}
+          className={cn(
+            'flex flex-1 flex-col items-center gap-1 py-2.5 transition-colors',
+            view === 'analytics' ? 'text-primary' : 'text-muted-foreground'
+          )}
+        >
+          <BarChart3 className="h-5 w-5" />
+          <span className="text-[10px] font-medium">Analytics</span>
+        </button>
+
+        {/* Account */}
+        <button
+          onClick={() => setView('account')}
+          className={cn(
+            'flex flex-1 flex-col items-center gap-1 py-2.5 transition-colors',
+            view === 'account' ? 'text-primary' : 'text-muted-foreground'
+          )}
+        >
+          <UserCircle className="h-5 w-5" />
+          <span className="text-[10px] font-medium">Account</span>
+        </button>
       </nav>
     </>
   )
