@@ -2,13 +2,9 @@ name = "trade-journal"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
-# Worker entry point + static assets (for wrangler deploy)
+# Worker entry point + Pages output directory
 main = ".open-next/worker.js"
 pages_build_output_dir = ".open-next"
-
-[assets]
-directory = ".open-next/assets"
-binding = "ASSETS"
 
 # Non-secret environment variables
 [vars]
