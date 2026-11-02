@@ -144,8 +144,8 @@ export function EditTradeDialog({ trade, open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="journal max-w-[640px] border-[var(--j-line)] bg-[var(--j-bg)] p-0 sm:p-0">
-        <form onSubmit={handleSave}>
+      <DialogContent showCloseButton={false} className="journal flex max-h-[88vh] max-w-[640px] flex-col border-[var(--j-line)] bg-[var(--j-bg)] p-0 sm:p-0">
+        <form onSubmit={handleSave} className="flex flex-1 flex-col overflow-hidden">
           {/* header band */}
           <div
             className="j-bar"
@@ -167,8 +167,8 @@ export function EditTradeDialog({ trade, open, onOpenChange }: Props) {
             </div>
           </div>
 
-          {/* body — the journal card styling */}
-          <div className="j-card" style={{ border: 0, borderRadius: 0 }}>
+          {/* body — scrollable form sections */}
+          <div className="j-card flex-1 overflow-y-auto" style={{ border: 0, borderRadius: 0 }}>
             <TradeEntryBody
               values={values}
               onChange={patch}

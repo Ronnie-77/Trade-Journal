@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Filter, RotateCcw, Calendar as CalendarIcon } from 'lucide-react'
+import { Filter, RotateCcw, Calendar as CalendarIcon, ChevronDown } from 'lucide-react'
 import {
   Popover,
   PopoverContent,
@@ -57,6 +57,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
 }
 
 export function TradeFilters({ filters, onChange, resultCount }: Props) {
+  const [expanded, setExpanded] = React.useState(false)
   const hasActive =
     filters.side !== 'ALL' ||
     filters.result !== 'ALL' ||
@@ -76,17 +77,35 @@ export function TradeFilters({ filters, onChange, resultCount }: Props) {
 
   return (
     <div className="rounded-xl border border-border/60 bg-card shadow-sm">
-      {/* Header band */}
-      <div className="flex items-center gap-2 border-b border-border/60 bg-muted/30 px-4 py-2.5 sm:px-5">
+      {/* Header band — clickable to toggle */}
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className="flex w-full items-center gap-2 border-b border-border/60 bg-muted/30 px-4 py-2.5 sm:px-5"
+      >
         <Filter className="h-3.5 w-3.5 text-primary" />
         <h3 className="text-sm font-semibold">Filters</h3>
-        <span className="ml-auto rounded-full bg-background px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-          {resultCount} match{resultCount === 1 ? '' : 'es'}
+        {hasActive && (
+          <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+            active
+          </span>
+        )}
+        <span className="ml-auto flex items-center gap-2">
+          <span className="rounded-full bg-background px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+            {resultCount} match{resultCount === 1 ? '' : 'es'}
+          </span>
+          <ChevronDown
+            className={cn(
+              'h-4 w-4 text-muted-foreground transition-transform',
+              expanded && 'rotate-180'
+            )}
+          />
         </span>
-      </div>
+      </button>
 
-      {/* Body */}
-      <div className="flex flex-col gap-4 px-4 py-4 sm:px-5 lg:flex-row lg:items-end lg:justify-between">
+      {/* Body — expand/collapse */}
+      {expanded && (
+        <div className="flex flex-col gap-4 px-4 py-4 sm:px-5 lg:flex-row lg:items-end lg:justify-between">
         {/* Left: date range + side + result */}
         <div className="grid flex-1 grid-cols-2 gap-3 sm:grid-cols-4">
           {/* From date */}
@@ -225,6 +244,7 @@ export function TradeFilters({ filters, onChange, resultCount }: Props) {
           </Button>
         </div>
       </div>
+      )}
     </div>
   )
 }

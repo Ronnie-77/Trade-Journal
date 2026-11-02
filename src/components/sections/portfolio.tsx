@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Plus, ChevronDown } from 'lucide-react'
 import { TradeForm } from '@/components/portfolio/trade-form'
 import { TradeFilters } from '@/components/portfolio/trade-filters'
 import { TradesTable } from '@/components/portfolio/trades-table'
@@ -16,11 +16,11 @@ export function PortfolioSection() {
     fromDate: undefined,
     toDate: undefined,
   })
+  const [formOpen, setFormOpen] = React.useState(false)
 
   const { data, isLoading, isError, error } = useTrades(filters)
   const { data: allTrades } = useAllTrades()
 
-  // header stats from ALL trades (unfiltered)
   const stats = React.useMemo(
     () => (allTrades ? computeStats(allTrades) : null),
     [allTrades]
@@ -34,9 +34,9 @@ export function PortfolioSection() {
       : 'var(--j-ink)'
 
   return (
-    <div className="journal relative">
+    <div className="journal relative pb-16 sm:pb-0">
       <section className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-7">
-        {/* Header */}
+        {/* Header — stats only */}
         <header
           style={{
             display: 'flex',
@@ -44,15 +44,12 @@ export function PortfolioSection() {
             alignItems: 'flex-end',
             gap: 16,
             flexWrap: 'wrap',
-            marginBottom: 22,
+            marginBottom: 16,
           }}
         >
           <div>
-            <h1 className="j-title">New trade entry</h1>
-            <p className="j-sub">
-              Log the setup, the result and what you learned. Date and time are
-              filled in for you.
-            </p>
+            <h1 className="j-title">Portfolio</h1>
+            <p className="j-sub">Your trading journal</p>
           </div>
           <div className="stats">
             <div className="stat">
@@ -76,11 +73,26 @@ export function PortfolioSection() {
           </div>
         </header>
 
-        {/* Form + sidebar */}
-        <TradeForm />
+        {/* Add New Trade toggle button */}
+        <button
+          onClick={() => setFormOpen((v) => !v)}
+          className="btn"
+          style={{
+            width: '100%',
+            marginBottom: formOpen ? 16 : 20,
+            justifyContent: 'center',
+            padding: '10px 18px',
+          }}
+        >
+          <Plus style={{ width: 16, height: 16 }} />
+          {formOpen ? 'Close Entry Form' : 'Add New Trade Entry'}
+        </button>
+
+        {/* Form + sidebar (expand/collapse) */}
+        {formOpen && <TradeForm />}
 
         {/* Filters + table */}
-        <div className="px-3 sm:px-6" style={{ marginTop: 28 }}>
+        <div className="px-0 sm:px-3 lg:px-6" style={{ marginTop: formOpen ? 28 : 8 }}>
           <div style={{ marginBottom: 16 }}>
             <TradeFilters
               filters={filters}
