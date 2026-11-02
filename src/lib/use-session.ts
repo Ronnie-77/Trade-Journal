@@ -30,7 +30,6 @@ export function useAppSession() {
   const [session, setSession] = React.useState<AppSession | null>(null)
   const [loading, setLoading] = React.useState(true)
 
-  // Check session on mount AND when URL changes (e.g. after OAuth redirect)
   React.useEffect(() => {
     const checkSession = () => {
       const cookies = document.cookie.split(';')
@@ -41,19 +40,30 @@ export function useAppSession() {
       setLoading(false)
     }
     checkSession()
+    // Re-check after a short delay (handles redirect timing)
+    const timer = setTimeout(checkSession, 500)
+    return () => clearTimeout(timer)
   }, [])
 
   return { data: session, status: loading ? 'loading' : session ? 'authenticated' : 'unauthenticated' }
 }
 
 export function signIn() {
-  // Clear any stale localStorage before redirecting
+  // Clear stale state
   try { localStorage.removeItem('goldscalp-view') } catch {}
+  // Use full redirect to clear any cached state
   window.location.href = '/api/auth/signin/google'
 }
 
 export function signOut() {
-  // Clear localStorage so next login starts fresh
-  try { localStorage.removeItem('goldscalp-view') } catch {}
+  // Clear all client-side state
+  try {
+    localStorage.removeItem('goldscalp-view')
+    localStorage.removeItem('goldscalp-palette')
+  } catch {}
+  // Clear session cookie client-side too (belt + suspenders)
+  document.cookie = 'session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.workers.dev'
+  document.cookie = 'session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/'
+  // Redirect to server-side signout
   window.location.href = '/api/auth/signout'
 }

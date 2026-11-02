@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Loader2, Plus } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { TradeForm } from '@/components/portfolio/trade-form'
 import { TradeFilters } from '@/components/portfolio/trade-filters'
 import { TradesTable } from '@/components/portfolio/trades-table'
@@ -75,18 +75,6 @@ export function PortfolioSection() {
             </div>
           </div>
         </header>
-
-        {/* Mobile-only New Entry button (nav has it on desktop) */}
-        <div className="mb-4 flex justify-center sm:hidden">
-          <button
-            onClick={toggleForm}
-            className="btn"
-            style={{ padding: '8px 20px' }}
-          >
-            <Plus style={{ width: 15, height: 15 }} />
-            {formOpen ? 'Close' : 'New Entry'}
-          </button>
-        </div>
 
         {/* Form + sidebar (expand/collapse) */}
         {formOpen && <TradeForm />}

@@ -33,17 +33,23 @@ export default function Home() {
   if (!session) {
     return (
       <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background px-4">
+        {/* Enhanced glowing effects — login page only */}
         <div
-          className="pointer-events-none absolute -left-32 top-1/4 h-96 w-96 rounded-full opacity-20 blur-[100px]"
-          style={{ background: 'radial-gradient(circle, var(--primary), transparent 70%)' }}
+          className="pointer-events-none absolute -left-40 top-10 h-[32rem] w-[32rem] rounded-full opacity-30 blur-[120px] animate-gold-pulse"
+          style={{ background: 'radial-gradient(circle, var(--primary), transparent 60%)' }}
         />
         <div
-          className="pointer-events-none absolute -right-32 bottom-1/4 h-96 w-96 rounded-full opacity-15 blur-[100px]"
-          style={{ background: 'radial-gradient(circle, var(--chart-2), transparent 70%)' }}
+          className="pointer-events-none absolute -right-40 bottom-10 h-[32rem] w-[32rem] rounded-full opacity-25 blur-[120px] animate-gold-pulse"
+          style={{ background: 'radial-gradient(circle, var(--chart-2), transparent 60%)', animationDelay: '1.5s' }}
         />
+        <div
+          className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-10 blur-[80px] animate-gold-pulse"
+          style={{ background: 'radial-gradient(circle, var(--primary), transparent 70%)', animationDelay: '0.8s' }}
+        />
+        {/* Login content */}
         <div className="relative z-10 w-full max-w-sm space-y-10 text-center">
           <div className="flex flex-col items-center gap-5">
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/15 ring-1 ring-primary/30">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/15 ring-1 ring-primary/30 shadow-lg">
               <TrendingUp className="h-10 w-10 text-primary" />
             </div>
             <div className="space-y-2">

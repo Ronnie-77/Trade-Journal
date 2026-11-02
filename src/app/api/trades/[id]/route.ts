@@ -124,11 +124,14 @@ export async function PATCH(
 
   try {
     const db = await getDb()
-    // Verify ownership before allowing edit
     const user = getSessionUser(req)
     const userEmail = user?.email ?? undefined
     const existing = await db.trade.findUnique({ where: { id } })
-    if (!existing || existing.userId !== userEmail) {
+    if (!existing) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+    // Allow edit if userId matches OR if trade has no userId (old trades)
+    if (existing.userId && existing.userId !== userEmail) {
       return NextResponse.json({ error: 'Not found or unauthorized' }, { status: 404 })
     }
     const updated = await db.trade.update({ where: { id }, data })
@@ -143,7 +146,7 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
@@ -153,11 +156,14 @@ export async function DELETE(
 
   try {
     const db = await getDb()
-    // Verify ownership before allowing delete
     const user = getSessionUser(req)
     const userEmail = user?.email ?? undefined
     const existing = await db.trade.findUnique({ where: { id } })
-    if (!existing || existing.userId !== userEmail) {
+    if (!existing) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+    // Allow delete if userId matches OR if trade has no userId (old trades)
+    if (existing.userId && existing.userId !== userEmail) {
       return NextResponse.json({ error: 'Not found or unauthorized' }, { status: 404 })
     }
     await db.trade.delete({ where: { id } })

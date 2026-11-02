@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { exchangeCodeForUser, NEXTAUTH_SECRET, APP_URL } from '@/lib/google-auth'
+import { exchangeCodeForUser, APP_URL } from '@/lib/google-auth'
 
 export async function GET(req: NextRequest) {
   const url = req.nextUrl
@@ -23,26 +23,35 @@ export async function GET(req: NextRequest) {
   try {
     const user = await exchangeCodeForUser(code)
 
-    // Create a simple JWT-like session cookie (base64 encoded JSON)
+    // Create session data
     const sessionData = JSON.stringify({
       user,
       expires: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days
     })
     const sessionB64 = btoa(encodeURIComponent(sessionData))
 
-    const res = NextResponse.redirect(APP_URL)
+    // Redirect to home with a cache-busting param + set cookie
+    const res = NextResponse.redirect(`${APP_URL}/?auth=success&t=${Date.now()}`)
+    // Set cookie with both secure and non-secure for maximum compatibility
     res.cookies.set('session', sessionB64, {
       httpOnly: false,
       secure: true,
       sameSite: 'lax',
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      maxAge: 30 * 24 * 60 * 60,
+      path: '/',
+    })
+    // Also set without secure flag (works on http://localhost)
+    res.cookies.set('session', sessionB64, {
+      httpOnly: false,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60,
       path: '/',
     })
     // Clear the oauth_state cookie
     res.cookies.delete('oauth_state')
     return res
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'unknown'
     return NextResponse.redirect(`${APP_URL}/?error=callback_failed`)
   }
 }
