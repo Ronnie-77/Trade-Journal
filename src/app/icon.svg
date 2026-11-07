@@ -1,21 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="212 118 896 896" width="32" height="32">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="428 312 463 509" width="32" height="32">
   <style>
-    /* Theme-aware favicon: dark bg + white logo in dark mode,
-       light bg + dark logo in light mode. */
-    .bg { fill: #000000; }
+    /* Theme-aware: white logo in dark browser tabs, dark logo in light tabs.
+       No background — transparent, sits directly on the tab surface. */
     .logo { fill: #FFFFFF; }
-    .gap { stroke: #000000; }
     @media (prefers-color-scheme: light) {
-      .bg { fill: #F4F4F6; }
       .logo { fill: #15171C; }
-      .gap { stroke: #F4F4F6; }
     }
   </style>
 
-  <!-- Background (theme-aware) -->
-  <rect class="bg" x="0" y="0" width="1280" height="1280"/>
-
-  <!-- Candlesticks -->
+  <!-- Logo: 3 candlesticks + zigzag growth arrow + solid arrowhead.
+       viewBox cropped tightly around the content so the logo fills
+       the full favicon area. No background, no border. -->
   <g class="logo">
     <!-- Candle 1 — left -->
     <rect x="525" y="484" width="9" height="50"/>
@@ -29,10 +24,7 @@
     <rect x="742" y="443" width="9" height="50"/>
     <rect x="716" y="490" width="62" height="175"/>
     <rect x="742" y="661" width="9" height="70"/>
+    <!-- Zigzag arrow + arrowhead (solid, no stroke) -->
+    <polygon points="438,811 568,627 632,675 829,384 786,380 881,322 866,432 845,395 635,708 574,654"/>
   </g>
-
-  <!-- Zigzag arrow + arrowhead (stroke matches bg for clean cutouts) -->
-  <polygon class="logo gap" stroke-width="10" stroke-linejoin="miter"
-           paint-order="stroke fill"
-           points="438,811 568,627 632,675 829,384 786,380 881,322 866,432 845,395 635,708 574,654"/>
 </svg>

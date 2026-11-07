@@ -48,7 +48,23 @@ export async function GET(req: NextRequest) {
       maxAge: 30 * 24 * 60 * 60,
       path: '/',
     })
-    // Clear the oauth_state cookie
+    // Clear the oauth_state cookie — delete with BOTH secure flags so the
+    // cookie that was set with secure:true is actually removed (a secure
+    // cookie cannot be deleted by a non-secure delete response).
+    res.cookies.set('oauth_state', '', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 0,
+      path: '/',
+    })
+    res.cookies.set('oauth_state', '', {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 0,
+      path: '/',
+    })
     res.cookies.delete('oauth_state')
     return res
   } catch (e) {

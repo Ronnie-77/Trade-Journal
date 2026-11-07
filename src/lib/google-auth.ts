@@ -16,7 +16,10 @@ function getRedirectUrl(): string {
   return `${APP_URL}/api/auth/callback/google`
 }
 
-/** Build the Google OAuth consent URL and redirect the user there. */
+/** Build the Google OAuth consent URL and redirect the user there.
+ *  Uses prompt=select_account+consent so the account picker is shown
+ *  every time — this lets users switch accounts on subsequent logins
+ *  instead of being silently re-authenticated as the previous user. */
 export function redirectToGoogle(state: string) {
   const params = new URLSearchParams({
     client_id: GOOGLE_CLIENT_ID,
@@ -24,7 +27,7 @@ export function redirectToGoogle(state: string) {
     response_type: 'code',
     scope: 'openid email profile',
     state,
-    prompt: 'consent',
+    prompt: 'select_account consent',
   })
   return NextResponse.redirect(
     `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
