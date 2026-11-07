@@ -212,8 +212,9 @@ export function InstrumentSelect({
 
       <PopoverContent
         align="start"
-        className="w-[min(20rem,var(--radix-popover-trigger-width))] p-0"
-        style={{ minWidth: 280 }}
+        className="p-0"
+        style={{ width: 'min(18rem, calc(100vw - 2rem))', maxWidth: 'calc(100vw - 2rem)' }}
+        collisionPadding={8}
       >
         {/* Header bar: search + Add button */}
         <div className="flex items-center gap-1 border-b px-2 py-1.5">

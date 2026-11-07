@@ -1,16 +1,13 @@
 'use client'
 
 import * as React from 'react'
-import { ChevronDown, LogOut, Palette, Check } from 'lucide-react'
+import { ChevronDown, ChevronRight, LogOut, Palette, Check } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
   DropdownMenuLabel,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
 } from '@/components/ui/dropdown-menu'
 import { useAppSession, signOut } from '@/lib/use-session'
 import { usePaletteStore, PALETTES, type PaletteKey } from '@/lib/palette-store'
@@ -60,6 +57,9 @@ export function ProfileDropdown() {
     }
   }, [email, name])
 
+  // Theme list expand/collapse state (inline, not a submenu — works on mobile)
+  const [themeExpanded, setThemeExpanded] = React.useState(false)
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -90,6 +90,7 @@ export function ProfileDropdown() {
         align="end"
         className="w-60 p-0"
         sideOffset={8}
+        collisionPadding={16}
       >
         {/* Profile header */}
         <DropdownMenuLabel className="flex items-center gap-3 px-4 py-3">
@@ -115,39 +116,56 @@ export function ProfileDropdown() {
 
         <DropdownMenuSeparator className="my-0" />
 
-        {/* Theme — submenu with all palettes */}
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger className="flex items-center gap-2.5 px-3 py-2.5 text-sm">
+        {/* Theme — inline expand/collapse (mobile-friendly, no off-screen submenu) */}
+        <div className="py-1">
+          <button
+            type="button"
+            onClick={() => setThemeExpanded((v) => !v)}
+            className="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm transition-colors hover:bg-accent"
+          >
             <Palette className="h-4 w-4 text-muted-foreground" />
             <span className="font-medium">Theme</span>
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="w-56 p-1">
-            {PALETTES.map((p) => (
-              <button
-                key={p.key}
-                type="button"
-                onClick={() => setPalette(p.key as PaletteKey)}
-                className={cn(
-                  'flex w-full items-center justify-between rounded-md px-2 py-2 text-sm transition-colors',
-                  palette === p.key
-                    ? 'bg-primary/10 text-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-foreground'
-                )}
-              >
-                <span className="flex items-center gap-2.5">
-                  <Swatch colors={p.swatch} />
-                  <span className="font-medium">{p.label}</span>
-                  <span className="text-[10px] text-muted-foreground/70">
-                    {p.mode}
+            <ChevronRight
+              className={cn(
+                'ml-auto h-3.5 w-3.5 text-muted-foreground transition-transform',
+                themeExpanded && 'rotate-90'
+              )}
+            />
+          </button>
+
+          {/* Theme list — expands inline below the "Theme" item */}
+          {themeExpanded && (
+            <div className="border-t border-border/40 bg-muted/20 py-1">
+              {PALETTES.map((p) => (
+                <button
+                  key={p.key}
+                  type="button"
+                  onClick={() => {
+                    setPalette(p.key as PaletteKey)
+                    setThemeExpanded(false)
+                  }}
+                  className={cn(
+                    'flex w-full items-center justify-between px-3 py-2 text-sm transition-colors',
+                    palette === p.key
+                      ? 'bg-primary/10 text-foreground'
+                      : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                  )}
+                >
+                  <span className="flex items-center gap-2.5">
+                    <Swatch colors={p.swatch} />
+                    <span className="font-medium">{p.label}</span>
+                    <span className="text-[10px] text-muted-foreground/70">
+                      {p.mode}
+                    </span>
                   </span>
-                </span>
-                {palette === p.key && (
-                  <Check className="h-3.5 w-3.5 text-primary" />
-                )}
-              </button>
-            ))}
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
+                  {palette === p.key && (
+                    <Check className="h-3.5 w-3.5 text-primary" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         <DropdownMenuSeparator className="my-0" />
 

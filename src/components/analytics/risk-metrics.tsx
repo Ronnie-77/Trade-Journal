@@ -36,11 +36,12 @@ import {
 } from '@/lib/trade-stats'
 
 const tooltipStyle = {
-  backgroundColor: 'var(--popover)',
-  border: '1px solid var(--border)',
+  backgroundColor: 'rgba(248, 248, 250, 0.97)',
+  border: '1px solid rgba(0, 0, 0, 0.08)',
   borderRadius: '0.5rem',
-  color: 'var(--popover-foreground)',
+  color: '#18181b',
   fontSize: '12px',
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
 }
 
 interface Props {
