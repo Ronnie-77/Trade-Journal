@@ -25,6 +25,16 @@ export default function Home() {
     }
   }, [view, setView])
 
+  // Clean auth query params from the URL after login (e.g. ?auth=success&t=…).
+  // These are just flags/cache-busters — the actual session is in the cookie.
+  // Removing them keeps the URL clean and avoids confusing users.
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.has('auth') || params.has('error') || params.has('t')) {
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [])
+
   // Force a light theme on the login page (peachy→mint gradient aesthetic).
   // When the user logs in, restore their chosen palette.
   React.useEffect(() => {

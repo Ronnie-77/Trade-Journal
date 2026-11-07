@@ -215,6 +215,7 @@ export function InstrumentSelect({
         className="p-0"
         style={{ width: 'min(18rem, calc(100vw - 2rem))', maxWidth: 'calc(100vw - 2rem)' }}
         collisionPadding={8}
+        onOpenAutoFocus={(e) => e.preventDefault()}
       >
         {/* Header bar: search + Add button */}
         <div className="flex items-center gap-1 border-b px-2 py-1.5">
@@ -257,11 +258,11 @@ export function InstrumentSelect({
 
         {/* Inline add form (shows when "+ Add" is clicked) */}
         {showAddForm && (
-          <div className="border-b bg-muted/20 px-3 py-2.5">
+          <div className="border-b bg-muted/20 px-2 py-2">
             <label className="mb-1 block text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               New instrument symbol
             </label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <input
                 ref={addInputRef}
                 type="text"
@@ -273,12 +274,12 @@ export function InstrumentSelect({
                 onKeyDown={handleAddKeyDown}
                 placeholder="e.g. EURUSD"
                 maxLength={16}
-                className="h-8 flex-1 rounded-md border border-border/50 bg-background px-2 text-sm font-mono outline-none focus:border-primary/40"
+                className="h-8 min-w-0 flex-1 rounded-md border border-border/50 bg-background px-2 text-sm font-mono outline-none focus:border-primary/40"
               />
               <button
                 type="button"
                 onClick={handleConfirmAdd}
-                className="flex h-8 items-center gap-1 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                className="flex h-8 flex-shrink-0 items-center gap-1 rounded-md bg-primary px-2.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 <Plus className="h-3.5 w-3.5" />
                 Add
@@ -286,7 +287,7 @@ export function InstrumentSelect({
               <button
                 type="button"
                 onClick={() => { setShowAddForm(false); setNewSymbol(''); setAddError('') }}
-                className="flex h-8 items-center justify-center rounded-md border border-border/50 px-2 text-xs text-muted-foreground hover:bg-accent"
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md border border-border/50 text-muted-foreground hover:bg-accent"
               >
                 <X className="h-3.5 w-3.5" />
               </button>

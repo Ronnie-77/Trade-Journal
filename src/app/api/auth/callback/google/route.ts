@@ -20,6 +20,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(`${APP_URL}/?error=state_mismatch`)
   }
 
+  // Determine secure flag from the request protocol.
+  const isHttps = req.nextUrl.protocol === 'https:'
+
   try {
     const user = await exchangeCodeForUser(code)
 
@@ -30,44 +33,30 @@ export async function GET(req: NextRequest) {
     })
     const sessionB64 = btoa(encodeURIComponent(sessionData))
 
-    // Redirect to home with a cache-busting param + set cookie
+    // Redirect to home — URL will be cleaned by client-side useEffect
     const res = NextResponse.redirect(`${APP_URL}/?auth=success&t=${Date.now()}`)
-    // Set cookie with both secure and non-secure for maximum compatibility
+
+    // Set session cookie — single cookie with correct secure flag
     res.cookies.set('session', sessionB64, {
       httpOnly: false,
-      secure: true,
+      secure: isHttps,
       sameSite: 'lax',
       maxAge: 30 * 24 * 60 * 60,
       path: '/',
     })
-    // Also set without secure flag (works on http://localhost)
-    res.cookies.set('session', sessionB64, {
-      httpOnly: false,
-      secure: false,
-      sameSite: 'lax',
-      maxAge: 30 * 24 * 60 * 60,
-      path: '/',
-    })
-    // Clear the oauth_state cookie — delete with BOTH secure flags so the
-    // cookie that was set with secure:true is actually removed (a secure
-    // cookie cannot be deleted by a non-secure delete response).
+
+    // Clear oauth_state cookie with matching attributes
     res.cookies.set('oauth_state', '', {
       httpOnly: true,
-      secure: true,
+      secure: isHttps,
       sameSite: 'lax',
       maxAge: 0,
       path: '/',
     })
-    res.cookies.set('oauth_state', '', {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      maxAge: 0,
-      path: '/',
-    })
-    res.cookies.delete('oauth_state')
+
     return res
   } catch (e) {
+    console.error('OAuth callback error:', e)
     return NextResponse.redirect(`${APP_URL}/?error=callback_failed`)
   }
 }
