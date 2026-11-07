@@ -12,6 +12,7 @@ function filtersToParams(f?: TradeFilters): string {
   if (f.result && f.result !== 'ALL') p.set('result', f.result)
   if (f.fromDate) p.set('fromDate', f.fromDate)
   if (f.toDate) p.set('toDate', f.toDate)
+  if (f.instrument && f.instrument !== 'ALL') p.set('instrument', f.instrument)
   const s = p.toString()
   return s ? `?${s}` : ''
 }

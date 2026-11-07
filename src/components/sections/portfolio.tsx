@@ -14,6 +14,7 @@ export function PortfolioSection() {
   const [filters, setFilters] = React.useState<TFilters>({
     side: 'ALL',
     result: 'ALL',
+    instrument: 'ALL',
     fromDate: undefined,
     toDate: undefined,
   })

@@ -31,6 +31,11 @@ import {
   Loader2,
   Wallet,
   Percent,
+  ShieldAlert,
+  Zap,
+  Crown,
+  Skull,
+  Target,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -47,7 +52,18 @@ import {
   equityCurve,
   dailyPnl,
   fmtMoney,
+  byInstrument,
+  byStrategy,
+  byHour,
+  byDayOfWeek,
+  byMonth,
+  rMultipleDistribution,
 } from '@/lib/trade-stats'
+import { InstrumentBreakdownCard } from '@/components/analytics/instrument-breakdown'
+import { StrategyBreakdownCard } from '@/components/analytics/strategy-breakdown'
+import { TimeAnalysisCard } from '@/components/analytics/time-analysis'
+import { MonthlyPerformanceCard } from '@/components/analytics/monthly-performance'
+import { RiskMetricsCard } from '@/components/analytics/risk-metrics'
 
 const tooltipStyle = {
   backgroundColor: 'var(--popover)',
@@ -105,6 +121,12 @@ export function AnalyticsSection() {
   const s = computeStats(trades)
   const curve = equityCurve(trades)
   const daily = dailyPnl(trades)
+  const instrumentRows = byInstrument(trades)
+  const strategyRows = byStrategy(trades)
+  const hourRows = byHour(trades)
+  const dowRows = byDayOfWeek(trades)
+  const monthRows = byMonth(trades)
+  const rDist = rMultipleDistribution(trades)
 
   const outcomeData = [
     { name: 'Wins (TP)', value: s.wins, color: 'var(--chart-2)' },
@@ -138,6 +160,13 @@ export function AnalyticsSection() {
     { icon: Flame, label: 'Max win streak', value: `${s.maxWinStreak}`, sub: `current: ${s.currentStreak > 0 ? '+' : ''}${s.currentStreak}`, tone: 'neutral' },
     { icon: CalendarDays, label: 'Avg / day', value: `${s.avgPerDay.toFixed(1)}`, sub: 'trades per day', tone: 'neutral' },
     { icon: Activity, label: 'Avg win', value: `$${s.avgWin.toFixed(2)}`, sub: `avg loss $${s.avgLoss.toFixed(2)}`, tone: 'pos' },
+    // NEW — risk & depth metrics
+    { icon: ShieldAlert, label: 'Max drawdown', value: `-$${s.maxDrawdown.toFixed(2)}`, sub: `current: -$${s.currentDrawdown.toFixed(2)}`, tone: 'neg' },
+    { icon: Skull, label: 'Max loss streak', value: `${s.maxLossStreak}`, sub: 'consecutive SL', tone: 'neg' },
+    { icon: Crown, label: 'Largest win', value: `+$${s.largestWin.toFixed(2)}`, sub: 'best single trade', tone: 'pos' },
+    { icon: TrendingDown, label: 'Largest loss', value: `-$${s.largestLoss.toFixed(2)}`, sub: 'worst single trade', tone: 'neg' },
+    { icon: Zap, label: 'Avg R multiple', value: s.avgRMultiple !== null ? `${s.avgRMultiple > 0 ? '+' : ''}${s.avgRMultiple.toFixed(2)}R` : '—', sub: `${rDist.total} w/ planned risk`, tone: (s.avgRMultiple ?? 0) >= 0 ? 'pos' : 'neg' },
+    { icon: Target, label: 'Pay-off ratio', value: isFinite(s.payOffRatio) ? s.payOffRatio.toFixed(2) : '∞', sub: 'avg win ÷ avg loss', tone: 'neutral' },
   ]
 
   const toneColor = (tone: string) =>
@@ -160,7 +189,8 @@ export function AnalyticsSection() {
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Aggregate performance across every logged trade — totals, win/loss,
-          profit &amp; loss amounts, and visual breakdowns.
+          profit &amp; loss amounts, instrument/strategy/time breakdowns and risk
+          metrics.
         </p>
       </div>
 
@@ -183,7 +213,7 @@ export function AnalyticsSection() {
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: i * 0.03 }}
+                transition={{ duration: 0.3, delay: (i % 6) * 0.03 }}
               >
                 <Card className="border-border/60">
                   <CardContent className="px-4 py-4">
@@ -389,6 +419,7 @@ export function AnalyticsSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4 }}
+            className="mb-6"
           >
             <Card className="border-border/60">
               <CardHeader>
@@ -465,6 +496,41 @@ export function AnalyticsSection() {
               </CardContent>
             </Card>
           </motion.div>
+
+          {/* NEW — Instrument breakdown */}
+          <div className="mb-6">
+            <InstrumentBreakdownCard rows={instrumentRows} totalNet={s.net} />
+          </div>
+
+          {/* NEW — Strategy breakdown */}
+          <div className="mb-6">
+            <StrategyBreakdownCard rows={strategyRows} />
+          </div>
+
+          {/* NEW — Time analysis (hour + day of week) */}
+          <div className="mb-6">
+            <TimeAnalysisCard hours={hourRows} dows={dowRows} />
+          </div>
+
+          {/* NEW — Monthly performance */}
+          <div className="mb-6">
+            <MonthlyPerformanceCard months={monthRows} />
+          </div>
+
+          {/* NEW — Risk & drawdown metrics */}
+          <RiskMetricsCard
+            curve={curve}
+            rBuckets={rDist.buckets}
+            rTotal={rDist.total}
+            rAvg={rDist.avg}
+            rBest={rDist.best}
+            rWorst={rDist.worst}
+            maxDrawdown={s.maxDrawdown}
+            currentDrawdown={s.currentDrawdown}
+            maxLossStreak={s.maxLossStreak}
+            recoveryFactor={s.recoveryFactor}
+            sharpeLike={s.sharpeLike}
+          />
         </>
       )}
     </section>

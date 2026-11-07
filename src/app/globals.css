@@ -849,15 +849,29 @@
   min-width: 100px;
   flex: 1 1 0;
   text-align: center;
+  overflow: hidden;
+  /* container queries let the value font scale to the card's actual width,
+     so large P&L like +$12,345.67 never overflows even on narrow screens */
+  container-type: inline-size;
 }
 .journal .stat small {
   display: block;
   color: var(--j-mute);
   font-size: 0.6875rem;
   margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .journal .stat b {
-  font-size: 1.125rem;
+  display: block;
+  /* shrink-to-fit number: scales down with the card's inline width */
+  font-size: clamp(0.85rem, 9cqi, 1.125rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
 }
 @media (max-width: 640px) {
   .journal .stat {
@@ -868,7 +882,7 @@
     font-size: 0.75rem;
   }
   .journal .stat b {
-    font-size: 1.25rem;
+    font-size: clamp(0.9rem, 10cqi, 1.15rem);
   }
 }
 

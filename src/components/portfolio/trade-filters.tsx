@@ -22,6 +22,13 @@ import {
   ToggleGroupItem,
 } from '@/components/ui/toggle-group'
 import { type TradeFilters } from '@/lib/trade-types'
+import {
+  useAllInstruments,
+  CATEGORY_ORDER,
+  type Instrument,
+  type InstrumentCategory,
+} from '@/lib/instruments-store'
+import { useAllTrades } from '@/hooks/use-trades'
 import { cn } from '@/lib/utils'
 
 function toDateInput(date: Date | undefined): string | undefined {
@@ -61,6 +68,7 @@ export function TradeFilters({ filters, onChange, resultCount }: Props) {
   const hasActive =
     filters.side !== 'ALL' ||
     filters.result !== 'ALL' ||
+    (filters.instrument && filters.instrument !== 'ALL') ||
     !!filters.fromDate ||
     !!filters.toDate
 
@@ -71,9 +79,45 @@ export function TradeFilters({ filters, onChange, resultCount }: Props) {
     onChange({
       side: 'ALL',
       result: 'ALL',
+      instrument: 'ALL',
       fromDate: undefined,
       toDate: undefined,
     })
+
+  // Build the instrument list shown in the filter dropdown:
+  //   defaults + user-added (from store) + any seen in existing trades (legacy)
+  const storeInstruments = useAllInstruments()
+  const { data: allTrades } = useAllTrades()
+
+  const filterInstruments: { symbol: string; category?: InstrumentCategory }[] =
+    React.useMemo(() => {
+      const seen = new Map<string, InstrumentCategory | undefined>()
+      for (const i of storeInstruments) seen.set(i.symbol.toUpperCase(), i.category)
+      if (allTrades) {
+        for (const t of allTrades) {
+          const sym = (t.instrument || '').trim().toUpperCase()
+          if (!sym) continue
+          if (!seen.has(sym)) seen.set(sym, undefined)
+        }
+      }
+      return [...seen.entries()]
+        .map(([symbol, category]) => ({ symbol, category }))
+        .sort((a, b) => a.symbol.localeCompare(b.symbol))
+    }, [storeInstruments, allTrades])
+
+  // Group the filter list by category (instruments without a known category go to "Other")
+  const groupedFilter = React.useMemo(() => {
+    const map = new Map<InstrumentCategory, { symbol: string }[]>()
+    for (const i of filterInstruments) {
+      const cat = i.category ?? 'Other'
+      const arr = map.get(cat) ?? []
+      arr.push({ symbol: i.symbol })
+      map.set(cat, arr)
+    }
+    return CATEGORY_ORDER
+      .map((c) => ({ category: c, items: map.get(c) ?? [] }))
+      .filter((g) => g.items.length > 0)
+  }, [filterInstruments])
 
   return (
     <div className="rounded-xl border border-border/60 bg-card shadow-sm">
@@ -106,8 +150,8 @@ export function TradeFilters({ filters, onChange, resultCount }: Props) {
       {/* Body — expand/collapse */}
       {expanded && (
         <div className="flex flex-col gap-4 px-4 py-4 sm:px-5 lg:flex-row lg:items-end lg:justify-between">
-        {/* Left: date range + side + result */}
-        <div className="grid flex-1 grid-cols-2 gap-3 sm:grid-cols-4">
+        {/* Left: date range + side + result + instrument */}
+        <div className="grid flex-1 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {/* From date */}
           <div>
             <Label className="mb-1.5 block text-[11px] text-muted-foreground">
@@ -170,6 +214,46 @@ export function TradeFilters({ filters, onChange, resultCount }: Props) {
                 />
               </PopoverContent>
             </Popover>
+          </div>
+
+          {/* Instrument */}
+          <div>
+            <Label className="mb-1.5 block text-[11px] text-muted-foreground">
+              Instrument
+            </Label>
+            <Select
+              value={filters.instrument || 'ALL'}
+              onValueChange={(v) =>
+                set({ instrument: v as TradeFilters['instrument'] })
+              }
+            >
+              <SelectTrigger size="sm" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="max-h-72">
+                <SelectItem value="ALL">All instruments</SelectItem>
+                {groupedFilter.map((g) => (
+                  <React.Fragment key={g.category}>
+                    <SelectItem
+                      value={`__grp_${g.category}`}
+                      disabled
+                      className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70"
+                    >
+                      {g.category}
+                    </SelectItem>
+                    {g.items.map((it) => (
+                      <SelectItem
+                        key={it.symbol}
+                        value={it.symbol}
+                        className="pl-6 font-mono text-xs"
+                      >
+                        {it.symbol}
+                      </SelectItem>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Side */}

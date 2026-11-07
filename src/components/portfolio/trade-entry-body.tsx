@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { UploadCloud, X, ExternalLink } from 'lucide-react'
 import { SegmentedControl, MoneyInput, Chips } from '@/components/portfolio/journal-primitives'
+import { InstrumentSelect } from '@/components/portfolio/instrument-select'
 import {
   type TradeSide,
   type TradeResult,
@@ -33,8 +34,6 @@ interface Props {
   onChange: (patch: Partial<TradeEntryValues>) => void
   amountError?: string
 }
-
-const INSTRUMENTS = ['XAUUSD', 'EURUSD', 'GBPUSD', 'USDJPY', 'BTCUSD', 'NAS100']
 
 export function TradeEntryBody({ values, onChange, amountError }: Props) {
   const fileRef = React.useRef<HTMLInputElement>(null)
@@ -110,19 +109,11 @@ export function TradeEntryBody({ values, onChange, amountError }: Props) {
         <div className="row r2" style={{ display: 'grid', gap: 14, gridTemplateColumns: '1fr 1fr', marginBottom: 14 }}>
           <div>
             <label htmlFor="te-sym">Instrument</label>
-            <input
-              id="te-sym"
-              list="te-syms"
-              placeholder="e.g. XAUUSD"
-              autoComplete="off"
+            <InstrumentSelect
               value={values.instrument}
-              onChange={(e) => onChange({ instrument: e.target.value })}
+              onChange={(sym) => onChange({ instrument: sym })}
+              placeholder="e.g. XAUUSD"
             />
-            <datalist id="te-syms">
-              {INSTRUMENTS.map((s) => (
-                <option key={s} value={s} />
-              ))}
-            </datalist>
           </div>
           <div>
             <label htmlFor="te-lot">

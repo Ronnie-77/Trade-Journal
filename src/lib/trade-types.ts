@@ -42,6 +42,7 @@ export interface TradeFilters {
   result?: TradeResult | 'ALL'
   fromDate?: string // YYYY-MM-DD
   toDate?: string // YYYY-MM-DD
+  instrument?: string | 'ALL' // exact symbol, case-insensitive; 'ALL' = no filter
 }
 
 /**

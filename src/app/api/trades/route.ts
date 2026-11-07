@@ -38,6 +38,7 @@ export async function GET(req: NextRequest) {
     result?: string
     tradeAt?: { gte?: Date; lte?: Date }
     userId?: string | null
+    instrument?: { contains: string }
   } = { userId: userEmail }
 
   const side = url.get('side')
@@ -45,6 +46,13 @@ export async function GET(req: NextRequest) {
 
   const result = url.get('result')
   if (result && result !== 'ALL' && isResult(result)) where.result = result
+
+  const instrument = url.get('instrument')
+  if (instrument && instrument !== 'ALL') {
+    // SQLite (D1) `contains` maps to LIKE which is case-insensitive for ASCII.
+    // The `mode: 'insensitive'` option is PostgreSQL-only and breaks on SQLite.
+    where.instrument = { contains: instrument }
+  }
 
   const fromDate = url.get('fromDate')
   const toDate = url.get('toDate')
