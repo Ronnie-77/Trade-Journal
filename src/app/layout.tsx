@@ -32,26 +32,27 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Trade Journal — XAUUSD M5 Portfolio & Analytics",
+  title: "Trade Journal — Portfolio & Analytics",
   description:
-    "Track every XAUUSD M5 trade with screenshots, filter and review patterns, and analyze your full portfolio performance.",
+    "Track every trade with screenshots, filter and review patterns, and analyze your full portfolio performance across instruments.",
   keywords: [
-    "XAUUSD",
-    "Gold trading",
-    "M5 strategy",
-    "Pine Script",
+    "Trade journal",
+    "Trading",
+    "Portfolio",
+    "Analytics",
+    "Win rate",
+    "Profit factor",
+    "Risk management",
     "TradingView",
-    "scalping",
-    "win rate",
   ],
   authors: [{ name: "Z.ai Quant Lab" }],
-  icons: {
-    icon: "/icon.svg",
-  },
+  // icon.svg + apple-icon.tsx in src/app/ are auto-detected by Next.js
+  // App Router's file-based metadata convention — no need to declare here.
   openGraph: {
-    title: "XAUUSD M5 Scalper — High Win-Rate Strategy",
-    description: "10-year XAUUSD analysis + Pine Script indicator for M5 scalping.",
-    siteName: "Z.ai Quant Lab",
+    title: "Trade Journal — Portfolio & Analytics",
+    description:
+      "A premium trade journal to track, review, and improve your trading across every instrument.",
+    siteName: "Trade Journal",
     type: "website",
   },
 };

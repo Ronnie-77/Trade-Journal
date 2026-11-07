@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Check, ChevronDown, Plus, Search, X } from 'lucide-react'
+import { Check, ChevronDown, Plus, X, Search as SearchIcon } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Command,
@@ -15,6 +15,7 @@ import {
 import {
   useInstrumentsStore,
   useAllInstruments,
+  inferCategory,
   CATEGORY_ORDER,
   type InstrumentCategory,
   type Instrument,
@@ -31,15 +32,14 @@ const CATEGORY_BADGE: Record<InstrumentCategory, string> = {
 }
 
 /**
- * A professional, combobox-style instrument picker.
+ * Professional instrument picker with a dedicated "+ Add" button.
  *
  * - Grouped by category (Metals, Indices, Energy, Forex, Crypto, Other)
  * - Search by symbol or full name
- * - Add a brand new instrument inline when the search has no match
- * - Selected instrument is highlighted with a check mark
- *
- * Renders inside `.journal` so it inherits the journal input styles for
- * the trigger, while the dropdown uses shadcn popover/command styles.
+ * - "+ Add" button in the top-right corner opens an inline form to
+ *   add a brand-new instrument (persists to localStorage)
+ * - Selected instrument highlighted with a check mark
+ * - Custom (user-added) instruments can be removed via hover × button
  */
 export function InstrumentSelect({
   value,
@@ -55,9 +55,6 @@ export function InstrumentSelect({
   const instruments = useAllInstruments()
   const addCustom = useInstrumentsStore((s) => s.addCustom)
   const removeCustom = useInstrumentsStore((s) => s.removeCustom)
-  // Select the raw custom array (stable reference from Zustand) and derive
-  // the symbols set in useMemo — returning a fresh array from the selector
-  // would trigger an infinite useSyncExternalStore loop in React 19.
   const customInstruments = useInstrumentsStore((s) => s.custom)
 
   const customSymbols = React.useMemo(
@@ -67,6 +64,11 @@ export function InstrumentSelect({
 
   const [open, setOpen] = React.useState(false)
   const [query, setQuery] = React.useState('')
+  // Inline add-form state
+  const [showAddForm, setShowAddForm] = React.useState(false)
+  const [newSymbol, setNewSymbol] = React.useState('')
+  const [addError, setAddError] = React.useState('')
+  const addInputRef = React.useRef<HTMLInputElement>(null)
 
   // Resolve the currently-selected instrument (for the trigger display).
   const selected = React.useMemo(
@@ -97,27 +99,11 @@ export function InstrumentSelect({
       .filter((g) => g.items.length > 0)
   }, [filtered])
 
-  // Does the query look like a brand-new instrument?
-  const trimmedQuery = query.trim()
-  const exactMatch = instruments.some(
-    (i) => i.symbol.toLowerCase() === trimmedQuery.toLowerCase()
-  )
-  const canAdd =
-    trimmedQuery.length >= 2 &&
-    trimmedQuery.length <= 16 &&
-    !exactMatch &&
-    /^[A-Za-z0-9]+$/.test(trimmedQuery)
-
   const handleSelect = (symbol: string) => {
     onChange(symbol)
     setOpen(false)
     setQuery('')
-  }
-
-  const handleAddNew = () => {
-    if (!canAdd) return
-    const symbol = addCustom(trimmedQuery)
-    if (symbol) handleSelect(symbol)
+    setShowAddForm(false)
   }
 
   const handleRemoveCustom = (symbol: string, e: React.MouseEvent) => {
@@ -127,8 +113,63 @@ export function InstrumentSelect({
     if (selected?.symbol === symbol) onChange('')
   }
 
+  // --- Inline add form handlers ---
+  const handleOpenAddForm = () => {
+    setShowAddForm(true)
+    setNewSymbol('')
+    setAddError('')
+    // Focus the input after the DOM updates
+    setTimeout(() => addInputRef.current?.focus(), 50)
+  }
+
+  const handleConfirmAdd = () => {
+    const sym = newSymbol.trim().toUpperCase().replace(/\s+/g, '')
+    if (sym.length < 2) {
+      setAddError('At least 2 characters')
+      return
+    }
+    if (sym.length > 16) {
+      setAddError('Max 16 characters')
+      return
+    }
+    if (!/^[A-Za-z0-9]+$/.test(sym)) {
+      setAddError('Letters and numbers only')
+      return
+    }
+    // Check if already exists
+    if (instruments.some((i) => i.symbol === sym)) {
+      setAddError(`${sym} already exists`)
+      return
+    }
+    const added = addCustom(sym)
+    if (added) {
+      handleSelect(added)
+    }
+  }
+
+  const handleAddKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleConfirmAdd()
+    } else if (e.key === 'Escape') {
+      setShowAddForm(false)
+      setNewSymbol('')
+      setAddError('')
+    }
+  }
+
+  const handleClosePopover = (o: boolean) => {
+    setOpen(o)
+    if (!o) {
+      setQuery('')
+      setShowAddForm(false)
+      setNewSymbol('')
+      setAddError('')
+    }
+  }
+
   return (
-    <Popover open={open} onOpenChange={(o) => { setOpen(o); if (!o) setQuery('') }}>
+    <Popover open={open} onOpenChange={handleClosePopover}>
       <PopoverTrigger asChild>
         <button
           type="button"
@@ -136,7 +177,6 @@ export function InstrumentSelect({
           aria-haspopup="listbox"
           aria-controls="instrument-select-list"
           className={cn(
-            // Mirror the .journal input styling, plus a leading icon + trailing chevron.
             'journal-input flex w-full items-center justify-between gap-2 rounded-lg border bg-[var(--j-card)] px-2.5 py-[7px] text-left text-[0.8125rem] transition-[border-color,box-shadow]',
             'border-[var(--j-line)] hover:border-[var(--j-acc)] focus-visible:border-[var(--j-acc)] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--j-acc-bg)]',
             className
@@ -173,17 +213,106 @@ export function InstrumentSelect({
       <PopoverContent
         align="start"
         className="w-[min(20rem,var(--radix-popover-trigger-width))] p-0"
-        style={{ minWidth: 260 }}
+        style={{ minWidth: 280 }}
       >
+        {/* Header bar: search + Add button */}
+        <div className="flex items-center gap-1 border-b px-2 py-1.5">
+          <div className="flex flex-1 items-center gap-1.5 rounded-md border border-border/50 bg-muted/30 px-2 py-1">
+            <SearchIcon className="h-3.5 w-3.5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="h-5 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery('')}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+          {/* + Add button (top-right corner) */}
+          <button
+            type="button"
+            onClick={handleOpenAddForm}
+            disabled={showAddForm}
+            className={cn(
+              'flex items-center gap-1 rounded-md border px-2 py-1.5 text-xs font-medium transition-colors',
+              showAddForm
+                ? 'border-primary/30 bg-primary/10 text-primary'
+                : 'border-border/50 bg-background text-muted-foreground hover:border-primary/40 hover:text-primary'
+            )}
+            title="Add new instrument"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add
+          </button>
+        </div>
+
+        {/* Inline add form (shows when "+ Add" is clicked) */}
+        {showAddForm && (
+          <div className="border-b bg-muted/20 px-3 py-2.5">
+            <label className="mb-1 block text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+              New instrument symbol
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                ref={addInputRef}
+                type="text"
+                value={newSymbol}
+                onChange={(e) => {
+                  setNewSymbol(e.target.value)
+                  setAddError('')
+                }}
+                onKeyDown={handleAddKeyDown}
+                placeholder="e.g. EURUSD"
+                maxLength={16}
+                className="h-8 flex-1 rounded-md border border-border/50 bg-background px-2 text-sm font-mono outline-none focus:border-primary/40"
+              />
+              <button
+                type="button"
+                onClick={handleConfirmAdd}
+                className="flex h-8 items-center gap-1 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Add
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowAddForm(false); setNewSymbol(''); setAddError('') }}
+                className="flex h-8 items-center justify-center rounded-md border border-border/50 px-2 text-xs text-muted-foreground hover:bg-accent"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            {addError ? (
+              <p className="mt-1 text-[11px] text-rose-500">{addError}</p>
+            ) : (
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                {newSymbol.trim() ? (
+                  <>Category: <span className="font-medium">{inferCategory(newSymbol)}</span> · Enter to confirm, Esc to cancel</>
+                ) : (
+                  <>Type a symbol · Enter to confirm, Esc to cancel</>
+                )}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Instrument list */}
         <Command shouldFilter={false} loop>
-          <CommandInput
-            placeholder="Search instrument or type a new symbol…"
-            value={query}
-            onValueChange={setQuery}
-          />
           <CommandList id="instrument-select-list">
-            {filtered.length === 0 && !canAdd ? (
-              <CommandEmpty>No instruments found.</CommandEmpty>
+            {filtered.length === 0 ? (
+              <CommandEmpty>
+                {query
+                  ? `No instruments matching "${query}"`
+                  : 'No instruments. Click "+ Add" to create one.'}
+              </CommandEmpty>
             ) : (
               grouped.map((g, idx) => (
                 <React.Fragment key={g.category}>
@@ -238,25 +367,6 @@ export function InstrumentSelect({
                 </React.Fragment>
               ))
             )}
-
-            {/* Add new instrument inline */}
-            {canAdd && (
-              <>
-                {filtered.length > 0 && <CommandSeparator />}
-                <CommandGroup heading="Add new">
-                  <CommandItem
-                    value={`__add__${trimmedQuery}`}
-                    onSelect={handleAddNew}
-                    className="gap-2"
-                  >
-                    <Plus className="h-3.5 w-3.5 text-primary" />
-                    <span className="text-sm">
-                      Add <span className="font-mono font-semibold">{trimmedQuery.toUpperCase()}</span> as a new instrument
-                    </span>
-                  </CommandItem>
-                </CommandGroup>
-              </>
-            )}
           </CommandList>
         </Command>
       </PopoverContent>
@@ -264,5 +374,4 @@ export function InstrumentSelect({
   )
 }
 
-/* Convenience export for the empty (no-selection) trigger look. */
-export { Search }
+export { SearchIcon as Search }

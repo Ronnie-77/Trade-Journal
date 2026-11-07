@@ -8,12 +8,15 @@ import { PortfolioSection } from '@/components/sections/portfolio'
 import { AnalyticsSection } from '@/components/sections/analytics'
 import { AccountSection } from '@/components/sections/account'
 import { useViewStore } from '@/lib/view-store'
-import { TrendingUp } from 'lucide-react'
+import { usePaletteStore, getPalette } from '@/lib/palette-store'
+import { Logo } from '@/components/logo'
+import { ParticleBackground } from '@/components/particle-background'
 
 export default function Home() {
   const view = useViewStore((s) => s.view)
   const setView = useViewStore((s) => s.setView)
   const { data: session, status } = useAppSession()
+  const palette = usePaletteStore((s) => s.palette)
 
   React.useEffect(() => {
     // Reset invalid persisted view (e.g. 'research' from old code)
@@ -21,6 +24,25 @@ export default function Home() {
       setView('portfolio')
     }
   }, [view, setView])
+
+  // Force a light theme on the login page (peachy→mint gradient aesthetic).
+  // When the user logs in, restore their chosen palette.
+  React.useEffect(() => {
+    const root = document.documentElement
+    if (!session) {
+      // Login page: always light (coral-light palette has peachy tones)
+      root.setAttribute('data-palette', 'coral-light')
+      root.classList.remove('dark')
+      root.style.colorScheme = 'light'
+    } else {
+      // App: restore the user's saved palette
+      root.setAttribute('data-palette', palette)
+      const mode = getPalette(palette).mode
+      if (mode === 'dark') root.classList.add('dark')
+      else root.classList.remove('dark')
+      root.style.colorScheme = mode
+    }
+  }, [session, palette])
 
   if (status === 'loading') {
     return (
@@ -32,25 +54,31 @@ export default function Home() {
 
   if (!session) {
     return (
-      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background px-4">
-        {/* Enhanced glowing effects — login page only */}
+      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4">
+        {/* Soft peachy→mint gradient background */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(125deg, #FDE8E4 0%, #FCEDE8 20%, #F4F2EC 45%, #E8F0E9 70%, #E0EEE7 100%)',
+          }}
+        />
+        {/* Particle network / constellation (dark dots on light bg) */}
+        <ParticleBackground density={90} linkDistance={140} />
+        {/* Ambient glow orbs (warm + cool, subtle) */}
         <div
           className="pointer-events-none absolute -left-40 top-10 h-[32rem] w-[32rem] rounded-full opacity-30 blur-[120px] animate-gold-pulse"
-          style={{ background: 'radial-gradient(circle, var(--primary), transparent 60%)' }}
+          style={{ background: 'radial-gradient(circle, rgba(244,162,97,0.4), transparent 60%)' }}
         />
         <div
           className="pointer-events-none absolute -right-40 bottom-10 h-[32rem] w-[32rem] rounded-full opacity-25 blur-[120px] animate-gold-pulse"
-          style={{ background: 'radial-gradient(circle, var(--chart-2), transparent 60%)', animationDelay: '1.5s' }}
-        />
-        <div
-          className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-10 blur-[80px] animate-gold-pulse"
-          style={{ background: 'radial-gradient(circle, var(--primary), transparent 70%)', animationDelay: '0.8s' }}
+          style={{ background: 'radial-gradient(circle, rgba(134,197,160,0.35), transparent 60%)', animationDelay: '1.5s' }}
         />
         {/* Login content */}
         <div className="relative z-10 w-full max-w-sm space-y-10 text-center">
           <div className="flex flex-col items-center gap-5">
             <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/15 ring-1 ring-primary/30 shadow-lg">
-              <TrendingUp className="h-10 w-10 text-primary" />
+              <Logo size={60} className="text-foreground" />
             </div>
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tight">Trade Journal</h1>
@@ -69,6 +97,7 @@ export default function Home() {
             </svg>
             Continue with Google
           </button>
+
           <p className="text-xs text-muted-foreground">
             Sign in to track your trades, view analytics, and manage your journal.
           </p>
@@ -78,12 +107,16 @@ export default function Home() {
   }
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div className="relative flex h-screen flex-col overflow-hidden">
       <SiteNav />
-      <main className="flex-1 overflow-y-auto overflow-x-hidden pb-16 sm:pb-0">
-        {view === 'analytics' ? <AnalyticsSection /> :
-         view === 'account' ? <AccountSection /> :
-         <PortfolioSection />}
+      <main className="relative flex-1 overflow-y-auto overflow-x-hidden pb-16 sm:pb-0">
+        {/* Subtle particle network in the background of all app views */}
+        <ParticleBackground density={50} linkDistance={120} particleOpacity={0.3} lineOpacity={0.2} />
+        <div className="relative z-10">
+          {view === 'analytics' ? <AnalyticsSection /> :
+           view === 'account' ? <AccountSection /> :
+           <PortfolioSection />}
+        </div>
       </main>
       <MinimalFooter />
     </div>

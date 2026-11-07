@@ -1,8 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" rx="7" fill="#0F1115"/>
-  <rect x="9" y="6" width="2.5" height="20" rx="1" fill="#FF7A2D" opacity="0.5"/>
-  <rect x="8" y="10" width="4.5" height="12" rx="1.5" fill="#FF7A2D"/>
-  <rect x="20.5" y="4" width="2.5" height="24" rx="1" fill="#22C55E" opacity="0.5"/>
-  <rect x="19.5" y="8" width="4.5" height="16" rx="1.5" fill="#22C55E"/>
-  <path d="M12 16 L20 16" stroke="#FF7A2D" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="212 118 896 896" width="32" height="32">
+  <style>
+    /* Theme-aware favicon: dark bg + white logo in dark mode,
+       light bg + dark logo in light mode. */
+    .bg { fill: #000000; }
+    .logo { fill: #FFFFFF; }
+    .gap { stroke: #000000; }
+    @media (prefers-color-scheme: light) {
+      .bg { fill: #F4F4F6; }
+      .logo { fill: #15171C; }
+      .gap { stroke: #F4F4F6; }
+    }
+  </style>
+
+  <!-- Background (theme-aware) -->
+  <rect class="bg" x="0" y="0" width="1280" height="1280"/>
+
+  <!-- Candlesticks -->
+  <g class="logo">
+    <!-- Candle 1 — left -->
+    <rect x="525" y="484" width="9" height="50"/>
+    <rect x="499" y="531" width="61" height="211"/>
+    <rect x="525" y="738" width="9" height="53"/>
+    <!-- Candle 2 — middle, tallest -->
+    <rect x="634" y="377" width="9" height="58"/>
+    <rect x="608" y="431" width="60" height="187"/>
+    <rect x="634" y="614" width="9" height="22"/>
+    <!-- Candle 3 — right -->
+    <rect x="742" y="443" width="9" height="50"/>
+    <rect x="716" y="490" width="62" height="175"/>
+    <rect x="742" y="661" width="9" height="70"/>
+  </g>
+
+  <!-- Zigzag arrow + arrowhead (stroke matches bg for clean cutouts) -->
+  <polygon class="logo gap" stroke-width="10" stroke-linejoin="miter"
+           paint-order="stroke fill"
+           points="438,811 568,627 632,675 829,384 786,380 881,322 866,432 845,395 635,708 574,654"/>
 </svg>

@@ -95,6 +95,7 @@ interface PaletteState {
 export const usePaletteStore = create<PaletteState>()(
   persist(
     (set) => ({
+      // Default = fintech-orange (cool blue-gray + warm orange accent).
       palette: 'fintech-orange',
       setPalette: (palette) => set({ palette }),
     }),
@@ -102,7 +103,7 @@ export const usePaletteStore = create<PaletteState>()(
   )
 )
 
-/** Look up a palette option by key. */
+/** Look up a palette option by key. Falls back to fintech-orange (default). */
 export function getPalette(key: PaletteKey): PaletteOption {
-  return PALETTES.find((p) => p.key === key) ?? PALETTES[0]
+  return PALETTES.find((p) => p.key === key) ?? PALETTES.find((p) => p.key === 'fintech-orange') ?? PALETTES[0]
 }

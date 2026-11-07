@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Plus, X } from 'lucide-react'
 import { TradeForm } from '@/components/portfolio/trade-form'
 import { TradeFilters } from '@/components/portfolio/trade-filters'
 import { TradesTable } from '@/components/portfolio/trades-table'
@@ -39,7 +39,7 @@ export function PortfolioSection() {
   return (
     <div className="journal relative pb-16 sm:pb-0">
       <section className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-7">
-        {/* Header — stats only */}
+        {/* Header — New Entry button + stats */}
         <header
           style={{
             display: 'flex',
@@ -50,10 +50,16 @@ export function PortfolioSection() {
             marginBottom: 16,
           }}
         >
-          <div>
-            <h1 className="j-title">Portfolio</h1>
-            <p className="j-sub">Your trading journal</p>
-          </div>
+          {/* New Entry button (moved here from nav bar) */}
+          <button
+            onClick={toggleForm}
+            className="btn"
+            style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+          >
+            {formOpen ? <X style={{ width: 15, height: 15 }} /> : <Plus style={{ width: 15, height: 15 }} />}
+            {formOpen ? 'Close form' : 'New Entry'}
+          </button>
+
           {/* Stats — centered row on mobile, inline on desktop */}
           <div className="stats flex w-full justify-center sm:w-auto sm:justify-end">
             <div className="stat">
