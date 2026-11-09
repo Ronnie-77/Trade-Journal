@@ -32,9 +32,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Trade Journal — Portfolio & Analytics",
+  title: "Trade Journal — Track. Analyze. Improve.",
   description:
-    "Track every trade with screenshots, filter and review patterns, and analyze your full portfolio performance across instruments.",
+    "Trade Journal is a web app for traders to record trades, analyze performance with deep analytics, and sharpen their trading edge.",
   keywords: [
     "Trade journal",
     "Trading",
@@ -43,15 +43,17 @@ export const metadata: Metadata = {
     "Win rate",
     "Profit factor",
     "Risk management",
-    "TradingView",
+    "Forex journal",
+    "Crypto journal",
   ],
-  authors: [{ name: "Z.ai Quant Lab" }],
-  // icon.svg + apple-icon.tsx in src/app/ are auto-detected by Next.js
-  // App Router's file-based metadata convention — no need to declare here.
+  authors: [{ name: "Trade Journal" }],
+  creator: "Trade Journal",
+  publisher: "Trade Journal",
+  // icon.svg + apple-icon.png in src/app/ are auto-detected by Next.js
   openGraph: {
-    title: "Trade Journal — Portfolio & Analytics",
+    title: "Trade Journal — Track. Analyze. Improve.",
     description:
-      "A premium trade journal to track, review, and improve your trading across every instrument.",
+      "A professional trade journal to track, review, and improve your trading across every instrument.",
     siteName: "Trade Journal",
     type: "website",
   },

@@ -1,11 +1,10 @@
-import { NextResponse } from 'next/server'
-import { APP_URL } from '@/lib/google-auth'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET() {
-  const res = NextResponse.redirect(APP_URL)
+export async function GET(req: NextRequest) {
+  // Redirect to landing page (/) after logout
+  const res = NextResponse.redirect(new URL('/', req.url))
 
-  // Delete session cookie — single delete with correct secure flag.
-  // No domain attribute (matches how it was set — host-only cookie).
+  // Delete session cookie — both secure flags
   res.cookies.set('session', '', {
     httpOnly: false,
     secure: true,

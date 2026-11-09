@@ -61,7 +61,7 @@ export function AuthPage({
 
       // Success — session cookie is set by the server.
       // Reload the page so useAppSession picks up the new cookie.
-      window.location.href = '/?auth=success&t=' + Date.now()
+      window.location.href = '/dashboard?auth=success&t=' + Date.now()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Network error')
       setLoading(false)
@@ -71,16 +71,16 @@ export function AuthPage({
   return (
     <div className="relative flex min-h-screen overflow-hidden bg-background text-foreground">
       {/* ── Left: Branding panel (desktop only) ── */}
-      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden border-r border-border/40 p-12 lg:flex">
+      <div className="relative hidden w-1/2 animate-page-in-left flex-col justify-between overflow-hidden border-r border-border/40 p-12 lg:flex">
         <ParticleBackground density={60} linkDistance={110} particleOpacity={0.35} lineOpacity={0.2} />
 
-        {/* Logo */}
-        <div className="relative z-10 flex items-center gap-2.5">
+        {/* Logo — clickable, navigates to landing page */}
+        <a href="/" className="relative z-10 flex items-center gap-2.5 transition-opacity hover:opacity-80">
           <Logo size={28} className="text-foreground" />
           <span className="font-mono text-sm font-semibold">
             Trade<span className="text-primary"> Journal</span>
           </span>
-        </div>
+        </a>
 
         {/* Middle: headline + features */}
         <div className="relative z-10 space-y-6">
@@ -134,14 +134,14 @@ export function AuthPage({
       </div>
 
       {/* ── Right: Form panel ── */}
-      <div className="relative flex w-full flex-col items-center justify-center px-6 py-12 lg:w-1/2">
-        {/* Mobile: logo at top */}
-        <div className="mb-8 flex items-center gap-2.5 lg:hidden">
+      <div key={mode} className="animate-page-in-right relative flex w-full flex-col items-center justify-center px-6 py-12 lg:w-1/2">
+        {/* Mobile: logo at top — clickable */}
+        <a href="/" className="mb-8 flex items-center gap-2.5 transition-opacity hover:opacity-80 lg:hidden">
           <Logo size={28} className="text-foreground" />
           <span className="font-mono text-sm font-semibold">
             Trade<span className="text-primary"> Journal</span>
           </span>
-        </div>
+        </a>
 
         <div className="w-full max-w-sm space-y-6">
           {/* Back link */}

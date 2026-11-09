@@ -1,14 +1,14 @@
 'use client'
 
 import * as React from 'react'
-import { Home, BarChart3 } from 'lucide-react'
+import { LayoutDashboard, BarChart3 } from 'lucide-react'
 import { useViewStore, type ViewKey } from '@/lib/view-store'
 import { Logo } from '@/components/logo'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { cn } from '@/lib/utils'
 
 const VIEWS: Array<{ key: ViewKey; label: string; icon: React.ElementType }> = [
-  { key: 'portfolio', label: 'Home', icon: Home },
+  { key: 'portfolio', label: 'Dashboard', icon: LayoutDashboard },
   { key: 'analytics', label: 'Analytics', icon: BarChart3 },
 ]
 
@@ -21,17 +21,20 @@ export function SiteNav() {
       {/* ── Desktop nav ── */}
       <header className="z-50 hidden w-full border-b border-border/40 bg-background/80 backdrop-blur sm:block">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-          {/* Brand left */}
-          <div className="flex items-center gap-2.5">
+          {/* Brand left — clickable, navigates to landing page */}
+          <a
+            href="/"
+            className="flex items-center gap-2.5 transition-opacity hover:opacity-80"
+          >
             <Logo size={26} className="text-foreground" />
-            <span className="font-mono text-sm font-semibold">
+            <span className="font-mono text-[15px] font-semibold">
               Trade<span className="text-primary"> Journal</span>
             </span>
-          </div>
+          </a>
 
-          {/* Center: Home | Analytics */}
+          {/* Center: Dashboard | Analytics */}
           <nav className="flex items-center gap-1 rounded-lg border border-border/50 bg-muted/40 p-1">
-            {/* Home */}
+            {/* Dashboard */}
             <button
               onClick={() => setView('portfolio')}
               className={cn(
@@ -41,8 +44,8 @@ export function SiteNav() {
                   : 'text-muted-foreground hover:bg-background hover:text-foreground'
               )}
             >
-              <Home className="h-3.5 w-3.5" />
-              Home
+              <LayoutDashboard className="h-3.5 w-3.5" />
+              Dashboard
             </button>
 
             {/* Analytics */}
@@ -65,12 +68,12 @@ export function SiteNav() {
         </div>
       </header>
 
-      {/* ── Mobile bottom nav: Home | Analytics | Account ── */}
+      {/* ── Mobile bottom nav: Dashboard | Analytics | Account ── */}
       <nav
         className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-around border-t border-border/40 bg-background/95 backdrop-blur sm:hidden"
         style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
-        {/* Home */}
+        {/* Dashboard */}
         <button
           onClick={() => setView('portfolio')}
           className={cn(
@@ -78,8 +81,8 @@ export function SiteNav() {
             view === 'portfolio' ? 'text-primary' : 'text-muted-foreground'
           )}
         >
-          <Home className="h-5 w-5" />
-          <span className="text-[10px] font-medium">Home</span>
+          <LayoutDashboard className="h-5 w-5" />
+          <span className="text-[10px] font-medium">Dashboard</span>
         </button>
 
         {/* Analytics */}
