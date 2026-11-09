@@ -1,40 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
 /**
- * Middleware — protects /dashboard route.
- * If no session cookie, redirects to / (public landing page).
- * All other routes (/, /privacy-policy.html, /terms-of-service.html, etc.)
- * are public and don't require authentication.
+ * Middleware — currently a pass-through. Auth is handled by the
+ * /dashboard page component itself (shows login page if no session,
+ * shows dashboard if authenticated). This file exists so that future
+ * route protection can be added here if needed.
+ *
+ * All routes are public:
+ *   /              → public landing page (Server Component)
+ *   /dashboard     → auth handled by page component
+ *   /privacy-policy.html, /terms-of-service.html → public static files
  */
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl
-
-  // Only protect /dashboard
-  if (pathname.startsWith('/dashboard')) {
-    const sessionCookie = req.cookies.get('session')?.value
-
-    if (!sessionCookie) {
-      // No session cookie → redirect to landing page
-      const landingUrl = new URL('/', req.url)
-      return NextResponse.redirect(landingUrl)
-    }
-
-    // Optionally verify the session is not expired
-    try {
-      const decoded = decodeURIComponent(atob(sessionCookie))
-      const data = JSON.parse(decoded)
-      if (data.expires && data.expires < Date.now()) {
-        // Session expired → redirect to landing page
-        const landingUrl = new URL('/', req.url)
-        return NextResponse.redirect(landingUrl)
-      }
-    } catch {
-      // Invalid session cookie → redirect to landing page
-      const landingUrl = new URL('/', req.url)
-      return NextResponse.redirect(landingUrl)
-    }
-  }
-
+export function middleware(_req: NextRequest) {
   return NextResponse.next()
 }
 

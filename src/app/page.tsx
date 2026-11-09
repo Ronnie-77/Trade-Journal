@@ -35,12 +35,12 @@ export default function Home() {
 
       {/* Nav bar */}
       <nav className="relative z-20 flex items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-2.5">
+        <a href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
           <Logo size={26} className="text-foreground" />
-          <span className="font-mono text-sm font-semibold">
+          <span className="font-mono text-[15px] font-semibold">
             Trade<span className="text-primary"> Journal</span>
           </span>
-        </div>
+        </a>
         <a
           href="/dashboard"
           className="rounded-lg border border-border/60 bg-card/80 px-4 py-2 text-xs font-medium transition-all hover:border-primary/40 hover:bg-accent"
