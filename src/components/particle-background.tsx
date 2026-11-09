@@ -8,13 +8,11 @@ import * as React from 'react'
  * Features:
  *   - N slowly-drifting particles (dots) that wrap around edges
  *   - Thin lines connecting particles within a proximity threshold
- *   - **Mouse-interactive**: a "cursor particle" follows the mouse and
- *     connects to nearby particles with brighter lines. Particles near
- *     the cursor also brighten and grow slightly.
- *   - Subtle repulsion: particles gently push away from the cursor
- *   - Cursor particle has a pulsing glow ring
- *   - Colors auto-adapt to the theme (white in dark, dark in light)
- *   - Performance: caps particle count on mobile, pauses when tab hidden
+ *   - Mouse-interactive: cursor connects to nearby particles with lines
+ *   - Particles near the cursor brighten and grow slightly
+ *   - Subtle repulsion (gentle, slow) from cursor
+ *   - Colors auto-adapt to the theme
+ *   - No solid cursor dot — only glow ring + connection lines
  */
 
 interface Particle {
@@ -44,13 +42,13 @@ export function ParticleBackground({
   density = 80,
   linkDistance = 130,
   mouseLinkDistance = 160,
-  particleRadius = 1.6,
-  particleOpacity = 0.55,
-  lineOpacity = 0.35,
-  mouseLineOpacity = 0.5,
+  particleRadius = 2,
+  particleOpacity = 0.6,
+  lineOpacity = 0.4,
+  mouseLineOpacity = 0.55,
   speed = 0.35,
-  repulsionRadius = 100,
-  repulsionStrength = 0.3,
+  repulsionRadius = 90,
+  repulsionStrength = 0.08,
   className,
 }: Props) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
@@ -75,7 +73,6 @@ export function ParticleBackground({
       const particleColor = isDark
         ? 'rgba(255, 255, 255, ALPHA)'
         : 'rgba(20, 22, 28, ALPHA)'
-      // Accent color for mouse particle (uses theme primary)
       const accentColor = isDark
         ? 'rgba(255, 157, 46, ALPHA)'
         : 'rgba(255, 130, 20, ALPHA)'
@@ -125,13 +122,13 @@ export function ParticleBackground({
 
       ctx!.clearRect(0, 0, width, height)
 
-      // Update positions + apply mouse repulsion
+      // Update positions + apply gentle mouse repulsion
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i]
         p.x += p.vx
         p.y += p.vy
 
-        // Mouse repulsion — particles gently push away from cursor
+        // Gentle mouse repulsion — slow, subtle push
         if (mouse.active) {
           const dx = p.x - mouse.x
           const dy = p.y - mouse.y
@@ -143,14 +140,20 @@ export function ParticleBackground({
           }
         }
 
-        // Damping to prevent particles from flying off
-        p.vx *= 0.99
-        p.vy *= 0.99
-        // Maintain minimum speed
+        // Strong damping to keep particles calm
+        p.vx *= 0.97
+        p.vy *= 0.97
+        // Maintain minimum drift speed
         const v = Math.sqrt(p.vx * p.vx + p.vy * p.vy)
         if (v < speed * 0.3) {
-          p.vx += (Math.random() - 0.5) * speed * 0.1
-          p.vy += (Math.random() - 0.5) * speed * 0.1
+          p.vx += (Math.random() - 0.5) * speed * 0.08
+          p.vy += (Math.random() - 0.5) * speed * 0.08
+        }
+        // Cap max speed to prevent fast flying
+        const maxV = speed * 1.5
+        if (v > maxV) {
+          p.vx = (p.vx / v) * maxV
+          p.vy = (p.vy / v) * maxV
         }
 
         // Wrap around edges
@@ -159,11 +162,11 @@ export function ParticleBackground({
         if (p.y < -10) p.y = height + 10
         if (p.y > height + 10) p.y = -10
 
-        // Reset radius toward base (after mouse boost)
+        // Smoothly reset radius toward base
         p.r += (p.baseR - p.r) * 0.1
       }
 
-      // Draw particle-to-particle connection lines
+      // Draw particle-to-particle connection lines (thicker)
       for (let i = 0; i < particles.length; i++) {
         const a = particles[i]
         for (let j = i + 1; j < particles.length; j++) {
@@ -175,7 +178,7 @@ export function ParticleBackground({
             const alpha = (1 - dist / linkDistance) * lineOpacity
             ctx!.beginPath()
             ctx!.strokeStyle = particleColor.replace('ALPHA', alpha.toFixed(3))
-            ctx!.lineWidth = 0.6
+            ctx!.lineWidth = 0.9
             ctx!.moveTo(a.x, a.y)
             ctx!.lineTo(b.x, b.y)
             ctx!.stroke()
@@ -183,7 +186,7 @@ export function ParticleBackground({
         }
       }
 
-      // Draw mouse-to-particle connection lines (brighter, accent color)
+      // Draw mouse-to-particle connection lines (accent color, thicker)
       if (mouse.active) {
         for (let i = 0; i < particles.length; i++) {
           const p = particles[i]
@@ -194,7 +197,7 @@ export function ParticleBackground({
             const alpha = (1 - dist / mouseLinkDistance) * mouseLineOpacity
             ctx!.beginPath()
             ctx!.strokeStyle = accentColor.replace('ALPHA', alpha.toFixed(3))
-            ctx!.lineWidth = 0.8
+            ctx!.lineWidth = 1.1
             ctx!.moveTo(mouse.x, mouse.y)
             ctx!.lineTo(p.x, p.y)
             ctx!.stroke()
@@ -202,7 +205,7 @@ export function ParticleBackground({
         }
       }
 
-      // Draw particles
+      // Draw particles (thicker dots)
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i]
         let opacity = particleOpacity
@@ -214,8 +217,8 @@ export function ParticleBackground({
           const dist = Math.sqrt(dx * dx + dy * dy)
           if (dist < 120) {
             const boost = 1 - dist / 120
-            opacity = Math.min(1, particleOpacity + boost * 0.45)
-            radius = p.baseR * (1 + boost * 1.2)
+            opacity = Math.min(1, particleOpacity + boost * 0.4)
+            radius = p.baseR * (1 + boost * 0.8)
           }
         }
 
@@ -225,39 +228,32 @@ export function ParticleBackground({
         ctx!.fill()
       }
 
-      // Draw mouse cursor particle — larger dot with pulsing glow ring
+      // Draw mouse cursor glow only (NO solid center dot)
       if (mouse.active) {
-        const pulse = Math.sin(pulseRef.current) * 0.5 + 0.5 // 0..1
-        const glowR = 8 + pulse * 4
+        const pulse = Math.sin(pulseRef.current) * 0.5 + 0.5
+        const glowR = 10 + pulse * 5
 
-        // Outer glow ring (fading)
-        const grad = ctx!.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, glowR * 2)
-        grad.addColorStop(0, accentColor.replace('ALPHA', '0.25'))
-        grad.addColorStop(0.5, accentColor.replace('ALPHA', '0.08'))
+        // Radial glow (fading outward)
+        const grad = ctx!.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, glowR * 2.5)
+        grad.addColorStop(0, accentColor.replace('ALPHA', '0.2'))
+        grad.addColorStop(0.4, accentColor.replace('ALPHA', '0.06'))
         grad.addColorStop(1, accentColor.replace('ALPHA', '0'))
         ctx!.beginPath()
         ctx!.fillStyle = grad
-        ctx!.arc(mouse.x, mouse.y, glowR * 2, 0, Math.PI * 2)
+        ctx!.arc(mouse.x, mouse.y, glowR * 2.5, 0, Math.PI * 2)
         ctx!.fill()
 
-        // Pulsing ring
+        // Pulsing ring (subtle)
         ctx!.beginPath()
-        ctx!.strokeStyle = accentColor.replace('ALPHA', (0.3 + pulse * 0.2).toFixed(3))
+        ctx!.strokeStyle = accentColor.replace('ALPHA', (0.25 + pulse * 0.15).toFixed(3))
         ctx!.lineWidth = 1.5
         ctx!.arc(mouse.x, mouse.y, glowR, 0, Math.PI * 2)
         ctx!.stroke()
-
-        // Solid center dot
-        ctx!.beginPath()
-        ctx!.fillStyle = accentColor.replace('ALPHA', '0.9')
-        ctx!.arc(mouse.x, mouse.y, 3, 0, Math.PI * 2)
-        ctx!.fill()
       }
 
       rafRef.current = requestAnimationFrame(step)
     }
 
-    // Listen on WINDOW (not canvas) since canvas has pointerEvents:none
     function onMouseMove(e: MouseEvent) {
       const rect = canvas!.getBoundingClientRect()
       mouseRef.current = {
