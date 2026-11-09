@@ -59,9 +59,20 @@ export function AuthPage({
         return
       }
 
-      // Success — session cookie is set by the server.
-      // Reload the page so useAppSession picks up the new cookie.
-      window.location.href = '/dashboard?auth=success&t=' + Date.now()
+      // Success — the server sets the session cookie via Set-Cookie header.
+      // Also set it client-side as a fallback (belt + suspenders) in case
+      // the fetch response's Set-Cookie isn't processed by the browser.
+      if (data.user) {
+        const sessionData = {
+          user: data.user,
+          expires: Date.now() + 30 * 24 * 60 * 60 * 1000,
+        }
+        const sessionB64 = btoa(encodeURIComponent(JSON.stringify(sessionData)))
+        document.cookie = `session=${sessionB64}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`
+      }
+
+      // Redirect to dashboard
+      window.location.href = '/dashboard'
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Network error')
       setLoading(false)

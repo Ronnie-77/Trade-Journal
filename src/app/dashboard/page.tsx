@@ -10,14 +10,12 @@ import { AccountSection } from '@/components/sections/account'
 import { useViewStore } from '@/lib/view-store'
 import { usePaletteStore, getPalette } from '@/lib/palette-store'
 import { ParticleBackground } from '@/components/particle-background'
-import { AuthPage } from '@/components/auth-page'
 
 export default function DashboardPage() {
   const view = useViewStore((s) => s.view)
   const setView = useViewStore((s) => s.setView)
   const { data: session, status } = useAppSession()
   const palette = usePaletteStore((s) => s.palette)
-  const [authView, setAuthView] = React.useState<'login' | 'signup'>('login')
 
   React.useEffect(() => {
     if (view !== 'portfolio' && view !== 'analytics' && view !== 'account') {
@@ -43,26 +41,17 @@ export default function DashboardPage() {
     root.style.colorScheme = mode
   }, [palette])
 
-  if (status === 'loading') {
+  // Redirect to /login if not authenticated
+  React.useEffect(() => {
+    if (status === 'unauthenticated') {
+      window.location.href = '/login'
+    }
+  }, [status])
+
+  if (status === 'loading' || status === 'unauthenticated') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-      </div>
-    )
-  }
-
-  // Not logged in → show login or signup page with transition animation
-  if (!session) {
-    return (
-      <div
-        key={authView}
-        className={authView === 'login' ? 'animate-page-in-left' : 'animate-page-in-right'}
-      >
-        <AuthPage
-          mode={authView}
-          onSwitchMode={setAuthView}
-          onBack={() => window.location.href = '/'}
-        />
       </div>
     )
   }

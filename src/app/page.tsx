@@ -42,7 +42,7 @@ export default function Home() {
           </span>
         </a>
         <a
-          href="/dashboard"
+          href="/login"
           className="rounded-lg border border-border/60 bg-card/80 px-4 py-2 text-xs font-medium transition-all hover:border-primary/40 hover:bg-accent"
         >
           Sign In
@@ -67,14 +67,14 @@ export default function Home() {
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <a
-            href="/dashboard"
+            href="/signup"
             className="flex items-center gap-2 rounded-xl bg-primary px-7 py-3 text-sm font-semibold text-primary-foreground shadow-lg transition-all hover:opacity-90 hover:shadow-xl"
           >
             Get Started Free
             <ArrowRight className="h-4 w-4" />
           </a>
           <a
-            href="/dashboard"
+            href="/login"
             className="rounded-xl border border-border/60 bg-card/80 px-7 py-3 text-sm font-medium transition-all hover:border-primary/40 hover:bg-accent"
           >
             Sign In
@@ -229,7 +229,7 @@ export default function Home() {
           Start your trading journal today. It&apos;s free.
         </p>
         <a
-          href="/dashboard"
+          href="/signup"
           className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-7 py-3 text-sm font-semibold text-primary-foreground shadow-lg transition-all hover:opacity-90 hover:shadow-xl"
         >
           Get Started
