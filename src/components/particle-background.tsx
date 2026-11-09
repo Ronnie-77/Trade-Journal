@@ -39,7 +39,7 @@ interface Props {
 }
 
 export function ParticleBackground({
-  density = 80,
+  density = 120,
   linkDistance = 130,
   mouseLinkDistance = 160,
   particleRadius = 2,
@@ -48,7 +48,7 @@ export function ParticleBackground({
   mouseLineOpacity = 0.55,
   speed = 0.35,
   repulsionRadius = 90,
-  repulsionStrength = 0.08,
+  repulsionStrength = 0.06,
   className,
 }: Props) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
@@ -128,32 +128,40 @@ export function ParticleBackground({
         p.x += p.vx
         p.y += p.vy
 
-        // Gentle mouse repulsion — slow, subtle push
+        // Gentle mouse repulsion — only affects nearby particles
+        let nearMouse = false
         if (mouse.active) {
           const dx = p.x - mouse.x
           const dy = p.y - mouse.y
           const dist = Math.sqrt(dx * dx + dy * dy)
           if (dist < repulsionRadius && dist > 0) {
+            nearMouse = true
             const force = (1 - dist / repulsionRadius) * repulsionStrength
             p.vx += (dx / dist) * force
             p.vy += (dy / dist) * force
           }
         }
 
-        // Strong damping to keep particles calm
-        p.vx *= 0.97
-        p.vy *= 0.97
-        // Maintain minimum drift speed
+        // Only damp particles near mouse (so they calm down after push).
+        // Particles far from mouse keep their natural drift speed.
+        if (nearMouse) {
+          p.vx *= 0.95
+          p.vy *= 0.95
+        }
+
+        // Maintain natural minimum drift speed (keeps particles moving)
         const v = Math.sqrt(p.vx * p.vx + p.vy * p.vy)
         if (v < speed * 0.3) {
-          p.vx += (Math.random() - 0.5) * speed * 0.08
-          p.vy += (Math.random() - 0.5) * speed * 0.08
+          p.vx += (Math.random() - 0.5) * speed * 0.1
+          p.vy += (Math.random() - 0.5) * speed * 0.1
         }
-        // Cap max speed to prevent fast flying
-        const maxV = speed * 1.5
-        if (v > maxV) {
-          p.vx = (p.vx / v) * maxV
-          p.vy = (p.vy / v) * maxV
+        // Cap max speed only for mouse-pushed particles
+        if (nearMouse) {
+          const maxV = speed * 1.8
+          if (v > maxV) {
+            p.vx = (p.vx / v) * maxV
+            p.vy = (p.vy / v) * maxV
+          }
         }
 
         // Wrap around edges
