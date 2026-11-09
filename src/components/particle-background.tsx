@@ -39,14 +39,14 @@ interface Props {
 }
 
 export function ParticleBackground({
-  density = 120,
-  linkDistance = 130,
-  mouseLinkDistance = 160,
+  density = 130,
+  linkDistance = 170,
+  mouseLinkDistance = 180,
   particleRadius = 2,
   particleOpacity = 0.6,
   lineOpacity = 0.4,
   mouseLineOpacity = 0.55,
-  speed = 0.35,
+  speed = 0.5,
   repulsionRadius = 90,
   repulsionStrength = 0.06,
   className,
@@ -91,9 +91,12 @@ export function ParticleBackground({
 
     function initParticles() {
       const area = width * height
+      // Scale particle count based on screen area.
+      // Allow scale > 1 for tall pages (landing page can be 2000+px) so
+      // particles don't become sparse/isolated on long pages.
       const baseArea = 1280 * 800
-      const scale = Math.min(1, area / baseArea)
-      const count = Math.max(20, Math.round(density * scale))
+      const scale = Math.max(0.5, Math.min(2.5, area / baseArea))
+      const count = Math.max(30, Math.round(density * scale))
       const arr: Particle[] = []
       for (let i = 0; i < count; i++) {
         const r = particleRadius * (0.7 + Math.random() * 0.6)
