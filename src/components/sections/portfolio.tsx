@@ -159,25 +159,54 @@ export function PortfolioSection() {
             />
           </div>
 
-          {/* Stats — centered row on mobile, inline on desktop */}
-          <div className="stats flex w-full justify-center sm:w-auto sm:justify-end">
-            <div className="stat">
-              <small>Net P&amp;L</small>
-              <b className="num" style={{ color: netColor }}>
+          {/* Stats — KPI cards row */}
+          <div className="grid w-full grid-cols-3 gap-3 sm:w-auto sm:gap-4">
+            <div className="rounded-xl border border-border/40 bg-card/60 p-3 sm:p-4 text-center backdrop-blur-sm">
+              <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground sm:text-[11px]">
+                Net P&amp;L
+              </div>
+              <div
+                className="mt-1 font-mono text-lg font-bold sm:text-2xl"
+                style={{ color: netColor }}
+              >
                 {stats ? fmtMoney(stats.net) : '–'}
-              </b>
+              </div>
+              {stats && stats.net !== 0 && (
+                <div
+                  className="mt-0.5 text-[10px] font-medium"
+                  style={{ color: stats.net > 0 ? 'var(--j-win)' : 'var(--j-loss)' }}
+                >
+                  {stats.net > 0 ? '↑' : '↓'} {stats.totalProfit > 0 || stats.totalLoss > 0 ? `${Math.abs((stats.net / Math.max(stats.totalProfit + stats.totalLoss, 1)) * 100).toFixed(0)}%` : ''}
+                </div>
+              )}
             </div>
-            <div className="stat">
-              <small>Win rate</small>
-              <b className="num">
+            <div className="rounded-xl border border-border/40 bg-card/60 p-3 sm:p-4 text-center backdrop-blur-sm">
+              <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground sm:text-[11px]">
+                Win Rate
+              </div>
+              <div className="mt-1 font-mono text-lg font-bold text-foreground sm:text-2xl">
                 {stats && (stats.wins + stats.losses) > 0
                   ? `${Math.round(stats.winRate)}%`
                   : '–'}
-              </b>
+              </div>
+              {stats && (stats.wins + stats.losses) > 0 && (
+                <div className="mt-0.5 text-[10px] text-muted-foreground">
+                  {stats.wins}W · {stats.losses}L
+                </div>
+              )}
             </div>
-            <div className="stat">
-              <small>Trades</small>
-              <b className="num">{stats ? stats.total : 0}</b>
+            <div className="rounded-xl border border-border/40 bg-card/60 p-3 sm:p-4 text-center backdrop-blur-sm">
+              <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground sm:text-[11px]">
+                Trades
+              </div>
+              <div className="mt-1 font-mono text-lg font-bold text-foreground sm:text-2xl">
+                {stats ? stats.total : 0}
+              </div>
+              {stats && stats.tradingDays > 0 && (
+                <div className="mt-0.5 text-[10px] text-muted-foreground">
+                  {stats.tradingDays} days
+                </div>
+              )}
             </div>
           </div>
         </header>
