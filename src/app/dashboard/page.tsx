@@ -3,22 +3,27 @@
 import * as React from 'react'
 import { useAppSession } from '@/lib/use-session'
 import { SiteNav } from '@/components/site-nav'
-import { MinimalFooter } from '@/components/sections/footer'
 import { PortfolioSection } from '@/components/sections/portfolio'
 import { AnalyticsSection } from '@/components/sections/analytics'
 import { AccountSection } from '@/components/sections/account'
+import { Achievements } from '@/components/analytics/achievements'
+import { useAllTrades } from '@/hooks/use-trades'
 import { useViewStore } from '@/lib/view-store'
 import { usePaletteStore, getPalette } from '@/lib/palette-store'
 import { ParticleBackground } from '@/components/particle-background'
+import { TradeForm } from '@/components/portfolio/trade-form'
+import { useFormStore } from '@/lib/form-store'
 
 export default function DashboardPage() {
   const view = useViewStore((s) => s.view)
   const setView = useViewStore((s) => s.setView)
   const { data: session, status } = useAppSession()
   const palette = usePaletteStore((s) => s.palette)
+  const formOpen = useFormStore((s) => s.formOpen)
+  const { data: allTrades } = useAllTrades()
 
   React.useEffect(() => {
-    if (view !== 'portfolio' && view !== 'analytics' && view !== 'account') {
+    if (view !== 'portfolio' && view !== 'analytics' && view !== 'achievements' && view !== 'account') {
       setView('portfolio')
     }
   }, [view, setView])
@@ -63,12 +68,18 @@ export default function DashboardPage() {
       <main className="relative flex-1 overflow-y-auto overflow-x-hidden pb-20 sm:pb-0">
         <ParticleBackground density={50} linkDistance={120} particleOpacity={0.3} lineOpacity={0.2} />
         <div className="relative z-10">
+          {formOpen && <TradeForm />}
           {view === 'analytics' ? <AnalyticsSection /> :
+           view === 'achievements' ? (
+             <section className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-10">
+               <h1 className="mb-6 text-xl font-bold tracking-tight sm:text-3xl">Achievements</h1>
+               <Achievements trades={allTrades ?? []} />
+             </section>
+           ) :
            view === 'account' ? <AccountSection /> :
-           <PortfolioSection />}
+           !formOpen ? <PortfolioSection /> : null}
         </div>
       </main>
-      <MinimalFooter />
     </div>
   )
 }

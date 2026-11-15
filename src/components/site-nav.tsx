@@ -2,41 +2,13 @@
 
 import * as React from 'react'
 import {
-  LayoutDashboard, BarChart3, Plus,
+  LayoutDashboard, BarChart3, Plus, Trophy,
 } from 'lucide-react'
-import { useViewStore, type ViewKey } from '@/lib/view-store'
+import { useViewStore } from '@/lib/view-store'
 import { useFormStore } from '@/lib/form-store'
-import { useAppSession } from '@/lib/use-session'
 import { Logo } from '@/components/logo'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { cn } from '@/lib/utils'
-
-// Placeholder component for avatar icon
-function ProfileAvatar({ className }: { className?: string }) {
-  const { data: session } = useAppSession()
-  const image = session?.user?.image
-  const name = session?.user?.name || '?'
-  if (image) {
-    return (
-      <img
-        src={image}
-        alt={name}
-        className={cn('rounded-full object-cover', className)}
-        style={{ width: '1.25rem', height: '1.25rem' }}
-        referrerPolicy="no-referrer"
-      />
-    )
-  }
-  const initial = name[0]?.toUpperCase()
-  return (
-    <span
-      className={cn('flex items-center justify-center rounded-full bg-primary/20 font-semibold text-primary', className)}
-      style={{ width: '1.25rem', height: '1.25rem', fontSize: '0.625rem' }}
-    >
-      {initial}
-    </span>
-  )
-}
 
 export function SiteNav() {
   const view = useViewStore((s) => s.view)
@@ -46,9 +18,9 @@ export function SiteNav() {
 
   return (
     <>
-      {/* ── Desktop: Left icon-only sidebar (like Notion/reference image) ── */}
+      {/* ── Desktop: Left icon-only sidebar ── */}
       <aside className="fixed left-0 top-0 z-40 hidden h-screen w-[60px] flex-col items-center border-r border-border/40 bg-background/80 backdrop-blur sm:flex">
-        {/* Logo at top */}
+        {/* Logo */}
         <a href="/" className="mt-3 flex items-center justify-center transition-opacity hover:opacity-80">
           <Logo size={24} className="text-foreground" />
         </a>
@@ -57,155 +29,69 @@ export function SiteNav() {
 
         {/* Nav icons */}
         <nav className="flex flex-1 flex-col items-center gap-2">
-          {/* Dashboard */}
-          <NavIcon
-            icon={LayoutDashboard}
-            label="Dashboard"
-            isActive={view === 'portfolio'}
-            onClick={() => setView('portfolio')}
-          />
-
-          {/* Analytics */}
-          <NavIcon
-            icon={BarChart3}
-            label="Analytics"
-            isActive={view === 'analytics'}
-            onClick={() => setView('analytics')}
-          />
+          <NavIcon icon={LayoutDashboard} label="Home" isActive={view === 'portfolio' && !formOpen} onClick={() => { setView('portfolio'); if (formOpen) toggleForm() }} />
+          <NavIcon icon={BarChart3} label="Stats" isActive={view === 'analytics' && !formOpen} onClick={() => { setView('analytics'); if (formOpen) toggleForm() }} />
+          <NavIcon icon={Trophy} label="Achievements" isActive={view === 'achievements' && !formOpen} onClick={() => { setView('achievements'); if (formOpen) toggleForm() }} />
         </nav>
 
-        {/* Bottom: Profile avatar only (no name, no home tab) */}
+        {/* Bottom: Profile */}
         <div className="mb-3 flex flex-col items-center gap-2">
           <ProfileDropdown />
         </div>
       </aside>
 
-      {/* ── Mobile: Floating pill bottom nav (icon + label style) ── */}
+      {/* ── Mobile: Floating pill bottom nav ── */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-4 pb-4 sm:hidden"
+        className="fixed bottom-0 left-0 right-0 z-[100] flex justify-center px-3 pb-3 sm:hidden"
         style={{ pointerEvents: 'none' }}
       >
         <nav
-          className="flex items-center justify-around rounded-full border border-border/40 bg-background px-4 py-2.5 shadow-2xl"
+          className="flex items-center justify-around rounded-full border border-border/40 bg-background px-3 py-2.5 shadow-2xl"
           style={{
-            maxWidth: '340px',
-            width: 'calc(100vw - 2rem)',
+            maxWidth: '380px',
+            width: 'calc(100vw - 1.5rem)',
             pointerEvents: 'auto',
           }}
         >
-          {/* Dashboard */}
-          <MobileNavTab
-            icon={LayoutDashboard}
-            label="Home"
-            isActive={view === 'portfolio'}
-            onClick={() => setView('portfolio')}
-          />
+          {/* Home */}
+          <MobileNavTab icon={LayoutDashboard} label="Home" isActive={view === 'portfolio' && !formOpen} onClick={() => { setView('portfolio'); if (formOpen) toggleForm() }} />
 
-          {/* New Entry */}
-          <MobileNavTab
-            icon={Plus}
-            label="Entry"
-            isActive={formOpen}
-            onClick={toggleForm}
-          />
+          {/* Stats */}
+          <MobileNavTab icon={BarChart3} label="Stats" isActive={view === 'analytics' && !formOpen} onClick={() => { setView('analytics'); if (formOpen) toggleForm() }} />
 
-          {/* Analytics */}
-          <MobileNavTab
-            icon={BarChart3}
-            label="Stats"
-            isActive={view === 'analytics'}
-            onClick={() => setView('analytics')}
-          />
+          {/* Entry */}
+          <MobileNavTab icon={Plus} label="Entry" isActive={formOpen} onClick={() => { if (view !== 'portfolio') setView('portfolio'); toggleForm() }} />
 
-          {/* Profile */}
-          <MobileNavTab
-            icon={ProfileAvatar}
-            label="Profile"
-            isActive={false}
-            onClick={() => {}}
-            isAvatar
-          />
+          {/* Achievements */}
+          <MobileNavTab icon={Trophy} label="Awards" isActive={view === 'achievements' && !formOpen} onClick={() => { setView('achievements'); if (formOpen) toggleForm() }} />
+
+          {/* Profile — avatar only */}
+          <div className="flex flex-1 items-center justify-center">
+            <ProfileDropdown />
+          </div>
         </nav>
       </div>
     </>
   )
 }
 
-/* ── Desktop nav icon (icon-only, no text) ── */
-function NavIcon({
-  icon: Icon,
-  label,
-  isActive,
-  onClick,
-}: {
-  icon: React.ComponentType<{ className?: string }>
-  label: string
-  isActive: boolean
-  onClick: () => void
-}) {
+/* ── Desktop nav icon ── */
+function NavIcon({ icon: Icon, label, isActive, onClick }: { icon: React.ComponentType<{ className?: string }>; label: string; isActive: boolean; onClick: () => void }) {
   return (
-    <button
-      onClick={onClick}
-      className={cn(
-        'group relative flex h-10 w-10 items-center justify-center rounded-lg transition-all',
-        isActive
-          ? 'bg-primary/15 text-primary'
-          : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground'
-      )}
-      title={label}
-    >
-      {isActive && (
-        <span className="absolute -left-[12px] top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-primary" />
-      )}
+    <button onClick={onClick} className={cn('group relative flex h-10 w-10 items-center justify-center rounded-lg transition-all', isActive ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:bg-muted/40 hover:text-foreground')} title={label}>
+      {isActive && <span className="absolute -left-[12px] top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-primary" />}
       <Icon className="h-5 w-5" />
-      {/* Tooltip */}
-      <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-popover px-2 py-1 text-xs font-medium text-popover-foreground opacity-0 shadow-md transition-opacity group-hover:opacity-100 z-50">
-        {label}
-      </span>
+      <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-md bg-popover px-2 py-1 text-xs font-medium text-popover-foreground opacity-0 shadow-md transition-opacity group-hover:opacity-100 z-50">{label}</span>
     </button>
   )
 }
 
-/* ── Mobile nav tab (icon + label, like reference) ── */
-function MobileNavTab({
-  icon: Icon,
-  label,
-  isActive,
-  onClick,
-  isAvatar,
-}: {
-  icon: React.ComponentType<{ className?: string }>
-  label: string
-  isActive: boolean
-  onClick: () => void
-  isAvatar?: boolean
-}) {
+/* ── Mobile nav tab (icon + label) ── */
+function MobileNavTab({ icon: Icon, label, isActive, onClick }: { icon: React.ComponentType<{ className?: string }>; label: string; isActive: boolean; onClick: () => void }) {
   return (
-    <button
-      onClick={onClick}
-      className="flex flex-1 flex-col items-center justify-center gap-0.5 py-0.5"
-      aria-label={label}
-    >
-      {isAvatar ? (
-        <Icon className="h-5 w-5" />
-      ) : (
-        <Icon
-          className={cn(
-            'h-5 w-5 transition-colors',
-            isActive ? 'text-primary' : 'text-muted-foreground'
-          )}
-          fill={isActive ? 'currentColor' : 'none'}
-          strokeWidth={isActive ? 2 : 1.5}
-        />
-      )}
-      <span
-        className={cn(
-          'text-[10px] font-medium transition-colors',
-          isActive ? 'text-primary' : 'text-muted-foreground'
-        )}
-      >
-        {label}
-      </span>
+    <button onClick={onClick} className="flex flex-1 flex-col items-center justify-center gap-0.5 py-0.5" aria-label={label}>
+      <Icon className={cn('h-5 w-5 transition-colors', isActive ? 'text-primary' : 'text-muted-foreground')} fill={isActive ? 'currentColor' : 'none'} strokeWidth={isActive ? 2 : 1.5} />
+      <span className={cn('text-[9px] font-medium transition-colors', isActive ? 'text-primary' : 'text-muted-foreground')}>{label}</span>
     </button>
   )
 }

@@ -67,7 +67,6 @@ import { RiskMetricsCard } from '@/components/analytics/risk-metrics'
 import { CalendarHeatmap } from '@/components/analytics/calendar-heatmap'
 import { TradeReplay } from '@/components/portfolio/trade-replay'
 import { AIInsights } from '@/components/analytics/ai-insights'
-import { Achievements } from '@/components/analytics/achievements'
 import { RotateCcw } from 'lucide-react'
 
 const tooltipStyle = {
@@ -227,7 +226,7 @@ export function AnalyticsSection() {
       ) : (
         <>
           {/* Stat cards grid */}
-          <div className="mb-6 grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+          <div className="mb-6 grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
             {stats.map((st, i) => (
               <motion.div
                 key={st.label}
@@ -237,21 +236,21 @@ export function AnalyticsSection() {
                 transition={{ duration: 0.3, delay: (i % 6) * 0.03 }}
               >
                 <Card className="border-border/60">
-                  <CardContent className="px-3 py-3 sm:px-4 sm:py-4">
+                  <CardContent className="px-4 py-3.5 sm:px-4 sm:py-4">
                     <div className="flex items-center gap-1.5 text-muted-foreground">
-                      <st.icon className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                      <span className="text-[9px] font-medium uppercase tracking-wide sm:text-[11px]">
+                      <st.icon className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                      <span className="text-[11px] font-medium uppercase tracking-wide sm:text-[11px]">
                         {st.label}
                       </span>
                     </div>
                     <div
                       className={
-                        'mt-1 text-sm font-bold sm:mt-1.5 sm:text-xl lg:text-2xl ' + toneColor(st.tone)
+                        'mt-1.5 text-lg font-bold sm:mt-1.5 sm:text-xl lg:text-2xl ' + toneColor(st.tone)
                       }
                     >
                       {st.value}
                     </div>
-                    <div className="mt-0.5 text-[9px] text-muted-foreground sm:text-[11px]">
+                    <div className="mt-0.5 text-[11px] text-muted-foreground sm:text-[11px]">
                       {st.sub}
                     </div>
                   </CardContent>
@@ -265,9 +264,6 @@ export function AnalyticsSection() {
 
           {/* AI Insights */}
           <AIInsights trades={trades} />
-
-          {/* Achievements */}
-          <Achievements trades={trades} />
 
           {/* Trade Replay Dialog */}
           <TradeReplay trades={trades} open={replayOpen} onOpenChange={setReplayOpen} />
