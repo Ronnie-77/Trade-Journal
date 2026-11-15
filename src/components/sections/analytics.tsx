@@ -184,16 +184,16 @@ export function AnalyticsSection() {
       : 'text-primary'
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
+    <section className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-10">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between gap-4 flex-wrap">
+      <div className="mb-4 sm:mb-6">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
-            <Badge variant="outline" className="mb-2 border-primary/40 text-primary">
+            <Badge variant="outline" className="mb-1.5 border-primary/40 text-primary sm:mb-2">
               <BarChart3 className="mr-1.5 h-3 w-3" />
               All-Portfolio Summary
             </Badge>
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            <h1 className="text-xl font-bold tracking-tight sm:text-3xl">
               Analytics
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -227,7 +227,7 @@ export function AnalyticsSection() {
       ) : (
         <>
           {/* Stat cards grid */}
-          <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+          <div className="mb-6 grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
             {stats.map((st, i) => (
               <motion.div
                 key={st.label}
@@ -237,21 +237,21 @@ export function AnalyticsSection() {
                 transition={{ duration: 0.3, delay: (i % 6) * 0.03 }}
               >
                 <Card className="border-border/60">
-                  <CardContent className="px-4 py-4">
+                  <CardContent className="px-3 py-3 sm:px-4 sm:py-4">
                     <div className="flex items-center gap-1.5 text-muted-foreground">
-                      <st.icon className="h-3.5 w-3.5" />
-                      <span className="text-[11px] font-medium uppercase tracking-wide">
+                      <st.icon className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                      <span className="text-[9px] font-medium uppercase tracking-wide sm:text-[11px]">
                         {st.label}
                       </span>
                     </div>
                     <div
                       className={
-                        'mt-1.5 text-xl font-bold sm:text-2xl ' + toneColor(st.tone)
+                        'mt-1 text-sm font-bold sm:mt-1.5 sm:text-xl lg:text-2xl ' + toneColor(st.tone)
                       }
                     >
                       {st.value}
                     </div>
-                    <div className="mt-0.5 text-[11px] text-muted-foreground">
+                    <div className="mt-0.5 text-[9px] text-muted-foreground sm:text-[11px]">
                       {st.sub}
                     </div>
                   </CardContent>

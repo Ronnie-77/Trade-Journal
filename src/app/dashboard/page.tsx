@@ -58,7 +58,7 @@ export default function DashboardPage() {
 
   // Logged in → Dashboard (trade entry + analytics)
   return (
-    <div key="dashboard" className="animate-page-in relative flex h-screen flex-col overflow-hidden sm:pl-[68px]">
+    <div key="dashboard" className="animate-page-in relative flex h-screen flex-col overflow-hidden sm:pl-[60px]">
       <SiteNav />
       <main className="relative flex-1 overflow-y-auto overflow-x-hidden pb-20 sm:pb-0">
         <ParticleBackground density={50} linkDistance={120} particleOpacity={0.3} lineOpacity={0.2} />
