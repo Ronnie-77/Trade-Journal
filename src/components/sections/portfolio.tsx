@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Loader2, Plus, X, Download, Upload, FileText } from 'lucide-react'
+import { Loader2, Plus, X, Upload } from 'lucide-react'
 import { TradeForm } from '@/components/portfolio/trade-form'
 import { TradeFilters } from '@/components/portfolio/trade-filters'
 import { TradesTable } from '@/components/portfolio/trades-table'
@@ -38,14 +38,6 @@ export function PortfolioSection() {
       : stats && stats.net < 0
       ? 'var(--j-loss)'
       : 'var(--j-ink)'
-
-  const handleExportCSV = () => {
-    window.open('/api/export/csv', '_blank')
-  }
-
-  const handleBackup = () => {
-    window.open('/api/backup', '_blank')
-  }
 
   const handleRestoreClick = () => {
     fileRef.current?.click()
@@ -114,42 +106,6 @@ export function PortfolioSection() {
               {formOpen ? <X style={{ width: 15, height: 15 }} /> : <Plus style={{ width: 15, height: 15 }} />}
               {formOpen ? 'Close' : 'New Entry'}
             </button>
-
-            {/* Export / Backup dropdown */}
-            <div className="relative group">
-              <button
-                className="btn ghost"
-                style={{ display: 'flex', alignItems: 'center', gap: 6 }}
-                title="Export & Backup"
-              >
-                <Download style={{ width: 14, height: 14 }} />
-                <span className="hidden sm:inline">Export</span>
-              </button>
-              {/* Dropdown menu */}
-              <div className="absolute right-0 top-full mt-1 hidden group-hover:block z-50 min-w-[180px] rounded-lg border border-border/60 bg-card shadow-lg">
-                <button
-                  onClick={handleExportCSV}
-                  className="flex w-full items-center gap-2.5 px-3 py-2.5 text-xs hover:bg-accent text-left"
-                >
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                  Export CSV
-                </button>
-                <button
-                  onClick={handleBackup}
-                  className="flex w-full items-center gap-2.5 px-3 py-2.5 text-xs hover:bg-accent text-left border-t border-border/40"
-                >
-                  <Download className="h-4 w-4 text-muted-foreground" />
-                  Backup (JSON)
-                </button>
-                <button
-                  onClick={handleRestoreClick}
-                  className="flex w-full items-center gap-2.5 px-3 py-2.5 text-xs hover:bg-accent text-left border-t border-border/40"
-                >
-                  <Upload className="h-4 w-4 text-muted-foreground" />
-                  Restore Backup
-                </button>
-              </div>
-            </div>
             <input
               ref={fileRef}
               type="file"

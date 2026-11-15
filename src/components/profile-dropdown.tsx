@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { ChevronDown, ChevronRight, LogOut, Palette, Check } from 'lucide-react'
+import { ChevronDown, ChevronRight, LogOut, Palette, Check, Download, FileText, FileJson } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,8 +57,10 @@ export function ProfileDropdown() {
     }
   }, [email, name])
 
-  // Theme list expand/collapse state (inline, not a submenu — works on mobile)
+  // Theme list expand/collapse state
   const [themeExpanded, setThemeExpanded] = React.useState(false)
+  // Data export expand/collapse state
+  const [exportExpanded, setExportExpanded] = React.useState(false)
 
   return (
     <DropdownMenu>
@@ -163,6 +165,52 @@ export function ProfileDropdown() {
                   )}
                 </button>
               ))}
+            </div>
+          )}
+        </div>
+
+        <DropdownMenuSeparator className="my-0" />
+
+        {/* Data Export — inline expand/collapse */}
+        <div className="py-1">
+          <button
+            type="button"
+            onClick={() => setExportExpanded((v) => !v)}
+            className="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm transition-colors hover:bg-accent"
+          >
+            <Download className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium">Data Export</span>
+            <ChevronRight
+              className={cn(
+                'ml-auto h-3.5 w-3.5 text-muted-foreground transition-transform',
+                exportExpanded && 'rotate-90'
+              )}
+            />
+          </button>
+
+          {exportExpanded && (
+            <div className="border-t border-border/40 bg-muted/20 py-1">
+              <button
+                onClick={() => { window.open('/api/export/csv', '_blank'); setExportExpanded(false) }}
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <FileText className="h-3.5 w-3.5" />
+                <span className="font-medium">Export CSV</span>
+              </button>
+              <button
+                onClick={() => { window.open('/api/export/pdf', '_blank'); setExportExpanded(false) }}
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <FileText className="h-3.5 w-3.5" />
+                <span className="font-medium">Export PDF Report</span>
+              </button>
+              <button
+                onClick={() => { window.open('/api/backup', '_blank'); setExportExpanded(false) }}
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <FileJson className="h-3.5 w-3.5" />
+                <span className="font-medium">Backup (JSON)</span>
+              </button>
             </div>
           )}
         </div>
