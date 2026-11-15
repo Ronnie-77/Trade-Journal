@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { ChevronDown, ChevronRight, LogOut, Palette, Check, Download, FileText, FileJson } from 'lucide-react'
+import { ChevronRight, LogOut, Palette, Check, Download, FileText, FileJson } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,24 +67,20 @@ export function ProfileDropdown() {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex items-center gap-2 rounded-full border border-border/50 bg-card/80 py-1 pl-1 pr-3 text-xs font-medium shadow-sm transition-all hover:border-primary/40 hover:bg-accent"
+          className="flex items-center justify-center rounded-full transition-all hover:opacity-80"
+          aria-label="Profile menu"
         >
-          {/* Avatar */}
+          {/* Avatar only — no name, no chevron, no border/background */}
           {image ? (
             <img
               src={image}
               alt={displayName}
-              className="h-7 w-7 rounded-full object-cover ring-1 ring-border/40"
+              className="h-8 w-8 rounded-full object-cover ring-1 ring-border/30"
               referrerPolicy="no-referrer"
             />
           ) : (
-            <AvatarFallback name={displayName} size={28} />
+            <AvatarFallback name={displayName} size={32} />
           )}
-          {/* Name (hidden on very small screens) */}
-          <span className="hidden max-w-[100px] truncate text-foreground sm:inline">
-            {displayName.split(' ')[0]}
-          </span>
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground transition-transform" />
         </button>
       </DropdownMenuTrigger>
 

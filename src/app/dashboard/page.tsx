@@ -63,12 +63,18 @@ export default function DashboardPage() {
 
   // Logged in → Dashboard (trade entry + analytics)
   return (
-    <div key="dashboard" className="animate-page-in relative flex h-screen flex-col overflow-hidden sm:pl-[60px]">
+    <div key="dashboard" className="relative flex h-screen flex-col overflow-hidden sm:pl-[60px]">
       <SiteNav />
-      <main className="relative flex-1 overflow-y-auto overflow-x-hidden pb-20 sm:pb-0">
+      <main className="relative flex-1 overflow-y-auto overflow-x-hidden pb-24 sm:pb-0">
         <ParticleBackground density={50} linkDistance={120} particleOpacity={0.3} lineOpacity={0.2} />
         <div className="relative z-10">
-          {formOpen && <TradeForm />}
+          {formOpen && (
+            <div className="journal relative pb-16 sm:pb-0">
+              <section className="relative mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-7">
+                <TradeForm />
+              </section>
+            </div>
+          )}
           {view === 'analytics' ? <AnalyticsSection /> :
            view === 'achievements' ? (
              <section className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-10">
