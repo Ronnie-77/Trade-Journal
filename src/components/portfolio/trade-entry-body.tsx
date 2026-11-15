@@ -147,9 +147,9 @@ export function TradeEntryBody({ values, onChange, amountError }: Props) {
             <span className="lbl">Result</span>
             <SegmentedControl
               options={[
-                { value: 'TP', label: 'Take profit' },
-                { value: 'SL', label: 'Stop loss' },
-                { value: 'BE', label: 'Break even' },
+                { value: 'TP', label: (<><span className="sm:hidden">TP</span><span className="hidden sm:inline">Take profit</span></>) },
+                { value: 'SL', label: (<><span className="sm:hidden">SL</span><span className="hidden sm:inline">Stop loss</span></>) },
+                { value: 'BE', label: (<><span className="sm:hidden">BE</span><span className="hidden sm:inline">Break even</span></>) },
               ]}
               value={values.result}
               onChange={(v) => onChange({ result: v as TradeResult })}

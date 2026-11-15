@@ -4,7 +4,7 @@ import * as React from 'react'
 
 interface SegOption {
   value: string
-  label: string
+  label: React.ReactNode
 }
 
 /**

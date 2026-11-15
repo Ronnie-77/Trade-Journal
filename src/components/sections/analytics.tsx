@@ -64,6 +64,11 @@ import { StrategyBreakdownCard } from '@/components/analytics/strategy-breakdown
 import { TimeAnalysisCard } from '@/components/analytics/time-analysis'
 import { MonthlyPerformanceCard } from '@/components/analytics/monthly-performance'
 import { RiskMetricsCard } from '@/components/analytics/risk-metrics'
+import { CalendarHeatmap } from '@/components/analytics/calendar-heatmap'
+import { TradeReplay } from '@/components/portfolio/trade-replay'
+import { AIInsights } from '@/components/analytics/ai-insights'
+import { Achievements } from '@/components/analytics/achievements'
+import { RotateCcw } from 'lucide-react'
 
 const tooltipStyle = {
   backgroundColor: 'rgba(248, 248, 250, 0.97)',
@@ -103,6 +108,7 @@ function BarValueLabel(props: {
 
 export function AnalyticsSection() {
   const { data: trades, isLoading, isError } = useAllTrades()
+  const [replayOpen, setReplayOpen] = React.useState(false)
 
   if (isLoading) {
     return (
@@ -181,18 +187,32 @@ export function AnalyticsSection() {
     <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
       {/* Header */}
       <div className="mb-6">
-        <Badge variant="outline" className="mb-2 border-primary/40 text-primary">
-          <BarChart3 className="mr-1.5 h-3 w-3" />
-          All-Portfolio Summary
-        </Badge>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Analytics
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Aggregate performance across every logged trade — totals, win/loss,
-          profit &amp; loss amounts, instrument/strategy/time breakdowns and risk
-          metrics.
-        </p>
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <Badge variant="outline" className="mb-2 border-primary/40 text-primary">
+              <BarChart3 className="mr-1.5 h-3 w-3" />
+              All-Portfolio Summary
+            </Badge>
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              Analytics
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Aggregate performance across every logged trade — totals, win/loss,
+              profit &amp; loss amounts, instrument/strategy/time breakdowns and risk
+              metrics.
+            </p>
+          </div>
+          {/* Trade Replay button */}
+          {trades.length > 0 && (
+            <button
+              onClick={() => setReplayOpen(true)}
+              className="flex items-center gap-2 rounded-lg border border-border/60 bg-card px-4 py-2 text-xs font-medium transition-all hover:border-primary/40 hover:bg-accent"
+            >
+              <RotateCcw className="h-4 w-4 text-primary" />
+              Trade Replay
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Empty state */}
@@ -239,6 +259,18 @@ export function AnalyticsSection() {
               </motion.div>
             ))}
           </div>
+
+          {/* Trade Calendar Heatmap */}
+          <CalendarHeatmap trades={trades} />
+
+          {/* AI Insights */}
+          <AIInsights trades={trades} />
+
+          {/* Achievements */}
+          <Achievements trades={trades} />
+
+          {/* Trade Replay Dialog */}
+          <TradeReplay trades={trades} open={replayOpen} onOpenChange={setReplayOpen} />
 
           {/* Equity curve full width */}
           <motion.div

@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Loader2, Plus, X } from 'lucide-react'
+import { Loader2, Plus, X, Download, Upload, FileText } from 'lucide-react'
 import { TradeForm } from '@/components/portfolio/trade-form'
 import { TradeFilters } from '@/components/portfolio/trade-filters'
 import { TradesTable } from '@/components/portfolio/trades-table'
@@ -9,6 +9,7 @@ import { useTrades, useAllTrades } from '@/hooks/use-trades'
 import { useFormStore } from '@/lib/form-store'
 import { type TradeFilters as TFilters } from '@/lib/trade-types'
 import { computeStats, fmtMoney } from '@/lib/trade-stats'
+import { useToast } from '@/hooks/use-toast'
 
 export function PortfolioSection() {
   const [filters, setFilters] = React.useState<TFilters>({
@@ -20,6 +21,8 @@ export function PortfolioSection() {
   })
   const formOpen = useFormStore((s) => s.formOpen)
   const toggleForm = useFormStore((s) => s.toggleForm)
+  const { toast } = useToast()
+  const fileRef = React.useRef<HTMLInputElement>(null)
 
   const { data, isLoading, isError, error } = useTrades(filters)
   const { data: allTrades } = useAllTrades()
@@ -36,6 +39,57 @@ export function PortfolioSection() {
       ? 'var(--j-loss)'
       : 'var(--j-ink)'
 
+  const handleExportCSV = () => {
+    window.open('/api/export/csv', '_blank')
+  }
+
+  const handleBackup = () => {
+    window.open('/api/backup', '_blank')
+  }
+
+  const handleRestoreClick = () => {
+    fileRef.current?.click()
+  }
+
+  const handleRestoreFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
+      const text = await file.text()
+      const data = JSON.parse(text)
+
+      if (!data.trades || !Array.isArray(data.trades)) {
+        toast({ title: 'Invalid backup file', variant: 'destructive' })
+        return
+      }
+
+      const res = await fetch('/api/restore', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+
+      const result = await res.json()
+
+      if (res.ok) {
+        toast({
+          title: 'Restore complete',
+          description: `${result.imported} trades imported, ${result.skipped} skipped`,
+        })
+        // Refresh trades list
+        window.location.reload()
+      } else {
+        toast({ title: 'Restore failed', description: result.error, variant: 'destructive' })
+      }
+    } catch {
+      toast({ title: 'Invalid file', description: 'Please select a valid backup JSON file', variant: 'destructive' })
+    }
+
+    // Reset input so same file can be selected again
+    if (fileRef.current) fileRef.current.value = ''
+  }
+
   return (
     <div className="journal relative pb-16 sm:pb-0">
       <section className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-7">
@@ -50,15 +104,60 @@ export function PortfolioSection() {
             marginBottom: 16,
           }}
         >
-          {/* New Entry button (moved here from nav bar) */}
-          <button
-            onClick={toggleForm}
-            className="btn"
-            style={{ display: 'flex', alignItems: 'center', gap: 6 }}
-          >
-            {formOpen ? <X style={{ width: 15, height: 15 }} /> : <Plus style={{ width: 15, height: 15 }} />}
-            {formOpen ? 'Close form' : 'New Entry'}
-          </button>
+          {/* New Entry + Export buttons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <button
+              onClick={toggleForm}
+              className="btn"
+              style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+            >
+              {formOpen ? <X style={{ width: 15, height: 15 }} /> : <Plus style={{ width: 15, height: 15 }} />}
+              {formOpen ? 'Close' : 'New Entry'}
+            </button>
+
+            {/* Export / Backup dropdown */}
+            <div className="relative group">
+              <button
+                className="btn ghost"
+                style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+                title="Export & Backup"
+              >
+                <Download style={{ width: 14, height: 14 }} />
+                <span className="hidden sm:inline">Export</span>
+              </button>
+              {/* Dropdown menu */}
+              <div className="absolute right-0 top-full mt-1 hidden group-hover:block z-50 min-w-[180px] rounded-lg border border-border/60 bg-card shadow-lg">
+                <button
+                  onClick={handleExportCSV}
+                  className="flex w-full items-center gap-2.5 px-3 py-2.5 text-xs hover:bg-accent text-left"
+                >
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  Export CSV
+                </button>
+                <button
+                  onClick={handleBackup}
+                  className="flex w-full items-center gap-2.5 px-3 py-2.5 text-xs hover:bg-accent text-left border-t border-border/40"
+                >
+                  <Download className="h-4 w-4 text-muted-foreground" />
+                  Backup (JSON)
+                </button>
+                <button
+                  onClick={handleRestoreClick}
+                  className="flex w-full items-center gap-2.5 px-3 py-2.5 text-xs hover:bg-accent text-left border-t border-border/40"
+                >
+                  <Upload className="h-4 w-4 text-muted-foreground" />
+                  Restore Backup
+                </button>
+              </div>
+            </div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept=".json"
+              hidden
+              onChange={handleRestoreFile}
+            />
+          </div>
 
           {/* Stats — centered row on mobile, inline on desktop */}
           <div className="stats flex w-full justify-center sm:w-auto sm:justify-end">

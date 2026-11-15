@@ -49,6 +49,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Trade Journal" }],
   creator: "Trade Journal",
   publisher: "Trade Journal",
+  manifest: "/manifest.json",
   // icon.svg + apple-icon.png in src/app/ are auto-detected by Next.js
   openGraph: {
     title: "Trade Journal — Track. Analyze. Improve.",
@@ -56,6 +57,11 @@ export const metadata: Metadata = {
       "A professional trade journal to track, review, and improve your trading across every instrument.",
     siteName: "Trade Journal",
     type: "website",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Trade Journal",
   },
 };
 
@@ -68,6 +74,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <PaletteScript />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#0f1115" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Trade Journal" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased bg-background text-foreground`}
