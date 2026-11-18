@@ -63,12 +63,16 @@ export default function DashboardPage() {
   }
 
   // Logged in → Dashboard (trade entry + analytics)
+  // Each view gets its own scroll container with a unique key so scroll
+  // position is independent per tab (switching tabs resets scroll).
   return (
     <div key="dashboard" className="relative flex h-screen flex-col overflow-hidden sm:pl-[60px]">
       <SiteNav />
-      <main className="relative flex-1 overflow-y-auto overflow-x-hidden pb-24 sm:pb-0">
+      <main className="relative flex-1 overflow-hidden">
         <ParticleBackground density={50} linkDistance={120} particleOpacity={0.3} lineOpacity={0.2} />
-        <div className="relative z-10">
+        {/* Key forces remount on view change → fresh scroll position per tab */}
+        <div key={view + (formOpen ? '-form' : '')} className="absolute inset-0 overflow-y-auto overflow-x-hidden pb-24 sm:pb-0">
+          <div className="relative z-10">
           {formOpen && (
             <div className="journal relative pb-16 sm:pb-0">
               <section className="relative mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-7">
@@ -91,6 +95,7 @@ export default function DashboardPage() {
            ) :
            view === 'account' ? <AccountSection /> :
            !formOpen ? <PortfolioSection /> : null}
+          </div>
         </div>
       </main>
     </div>
