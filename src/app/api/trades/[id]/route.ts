@@ -112,10 +112,7 @@ export async function PATCH(
   if (body.ruleFollowed !== undefined) {
     data.ruleFollowed =
       body.ruleFollowed === null ? null
-      : typeof body.ruleFollowed === 'boolean' ? body.ruleFollowed
-      : body.ruleFollowed === 'yes' ? true
-      : body.ruleFollowed === 'no' ? false
-      : null
+      : body.ruleFollowed.toString().slice(0, 16) || null
   }
 
   // image handling: allow null to clear

@@ -8,18 +8,26 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: '/dashboard',
     display: 'standalone',
     background_color: '#0f1115',
-    theme_color: '#ff9d2e',
+    theme_color: '#0f1115',
     orientation: 'portrait-primary',
     icons: [
       {
         src: '/icon.svg',
         sizes: 'any',
         type: 'image/svg+xml',
+        purpose: 'any',
       },
       {
         src: '/apple-icon.png',
         sizes: '512x512',
         type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: '/apple-icon.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
       },
     ],
     categories: ['finance', 'business', 'productivity'],

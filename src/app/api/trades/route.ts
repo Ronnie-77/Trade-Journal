@@ -130,13 +130,7 @@ export async function POST(req: NextRequest) {
   const ruleFollowed =
     body.ruleFollowed === null || body.ruleFollowed === undefined
       ? null
-      : typeof body.ruleFollowed === 'boolean'
-      ? body.ruleFollowed
-      : body.ruleFollowed === 'yes'
-      ? true
-      : body.ruleFollowed === 'no'
-      ? false
-      : null
+      : body.ruleFollowed.toString().slice(0, 16) || null
 
   // Get the authenticated user's email
   const user = getSessionUser(req)

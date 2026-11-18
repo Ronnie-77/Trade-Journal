@@ -1,17 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="428 312 463 509" width="32" height="32">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32">
   <style>
-    /* Theme-aware: white logo in dark browser tabs, dark logo in light tabs.
-       No background — transparent, sits directly on the tab surface. */
-    .logo { fill: #FFFFFF; }
+    /* Theme-aware logo with solid background for visibility on all surfaces. */
+    .bg { fill: #0F1115; }
+    .logo { fill: #FF9D2E; }
     @media (prefers-color-scheme: light) {
+      .bg { fill: #F4F4F6; }
       .logo { fill: #15171C; }
     }
   </style>
 
-  <!-- Logo: 3 candlesticks + zigzag growth arrow + solid arrowhead.
-       viewBox cropped tightly around the content so the logo fills
-       the full favicon area. No background, no border. -->
-  <g class="logo">
+  <!-- Solid rounded background (always visible, not transparent) -->
+  <rect class="bg" width="512" height="512" rx="112"/>
+
+  <!-- Logo: 3 candlesticks + zigzag growth arrow + arrowhead.
+       Scaled and centered in 512×512 viewBox.
+       Accent orange in dark mode, dark in light mode. -->
+  <g class="logo" transform="translate(96, 86) scale(0.68)">
     <!-- Candle 1 — left -->
     <rect x="525" y="484" width="9" height="50"/>
     <rect x="499" y="531" width="61" height="211"/>
@@ -24,7 +28,7 @@
     <rect x="742" y="443" width="9" height="50"/>
     <rect x="716" y="490" width="62" height="175"/>
     <rect x="742" y="661" width="9" height="70"/>
-    <!-- Zigzag arrow + arrowhead (solid, no stroke) -->
+    <!-- Zigzag arrow + arrowhead -->
     <polygon points="438,811 568,627 632,675 829,384 786,380 881,322 866,432 845,395 635,708 574,654"/>
   </g>
 </svg>
