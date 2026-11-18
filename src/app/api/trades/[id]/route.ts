@@ -109,6 +109,14 @@ export async function PATCH(
     data.mood =
       body.mood === null ? null : body.mood.toString().slice(0, 32) || null
   }
+  if (body.ruleFollowed !== undefined) {
+    data.ruleFollowed =
+      body.ruleFollowed === null ? null
+      : typeof body.ruleFollowed === 'boolean' ? body.ruleFollowed
+      : body.ruleFollowed === 'yes' ? true
+      : body.ruleFollowed === 'no' ? false
+      : null
+  }
 
   // image handling: allow null to clear
   if ('imageUrl' in body) {

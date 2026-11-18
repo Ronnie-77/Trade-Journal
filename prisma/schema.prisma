@@ -60,6 +60,8 @@ model Trade {
   strategy    String?
   /// Optional mood tag (Calm / Confident / Hesitant / FOMO / Revenge).
   mood        String?
+  /// Did the trader follow their rules? (yes/no/partial)
+  ruleFollowed String?
   /// User email — links trade to the authenticated user (data isolation).
   userId      String?
   createdAt   DateTime @default(now())

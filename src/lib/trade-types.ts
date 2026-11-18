@@ -19,6 +19,7 @@ export interface Trade {
   plannedRisk: number | null
   strategy: string | null
   mood: string | null
+  ruleFollowed: boolean | null
   createdAt: string
 }
 
@@ -35,6 +36,7 @@ export interface TradeInput {
   plannedRisk?: number | null
   strategy?: string | null
   mood?: string | null
+  ruleFollowed?: boolean | null
 }
 
 export interface TradeFilters {
@@ -68,6 +70,12 @@ export const STRATEGY_OPTIONS = [
   'News',
   'Range',
   'Scalp Indicator',
+] as const
+
+export const RULE_FOLLOWED_OPTIONS = [
+  { value: 'yes', label: 'Yes — followed my rules' },
+  { value: 'no', label: 'No — broke my rules' },
+  { value: 'partial', label: 'Partially' },
 ] as const
 
 export const RESULT_LABEL: Record<TradeResult, string> = {

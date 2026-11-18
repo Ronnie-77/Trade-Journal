@@ -67,6 +67,8 @@ import { RiskMetricsCard } from '@/components/analytics/risk-metrics'
 import { CalendarHeatmap } from '@/components/analytics/calendar-heatmap'
 import { TradeReplay } from '@/components/portfolio/trade-replay'
 import { AIInsights } from '@/components/analytics/ai-insights'
+import { Achievements } from '@/components/analytics/achievements'
+import { WeeklyAnalytics } from '@/components/analytics/weekly-analytics'
 import { RotateCcw } from 'lucide-react'
 
 const tooltipStyle = {
@@ -264,6 +266,12 @@ export function AnalyticsSection() {
 
           {/* AI Insights */}
           <AIInsights trades={trades} />
+
+          {/* Weekly Analytics */}
+          <WeeklyAnalytics trades={trades} />
+
+          {/* Achievements (in analytics on mobile since no tab) */}
+          <Achievements trades={trades} />
 
           {/* Trade Replay Dialog */}
           <TradeReplay trades={trades} open={replayOpen} onOpenChange={setReplayOpen} />

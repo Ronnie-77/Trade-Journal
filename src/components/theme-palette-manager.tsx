@@ -36,6 +36,6 @@ export function ThemePaletteManager() {
  * from localStorage, preventing a flash of the wrong theme.
  */
 export function PaletteScript() {
-  const code = `(function(){try{var raw=localStorage.getItem('goldscalp-palette');var p=raw?JSON.parse(raw):null;var k=(p&&p.state&&p.state.palette)||'fintech-orange';var MODES={'fintech-orange':'dark','slate-gold':'dark','carbon-orange':'dark','lime-glow':'dark','coral-light':'light','mono-light':'light','beige-gold':'light','rust-light':'light'};var m=MODES[k]||'dark';var r=document.documentElement;r.setAttribute('data-palette',k);if(m==='dark'){r.classList.add('dark');}else{r.classList.remove('dark');}r.style.colorScheme=m;}catch(e){document.documentElement.setAttribute('data-palette','fintech-orange');document.documentElement.classList.add('dark');}})();`
+  const code = `(function(){try{var raw=localStorage.getItem('goldscalp-palette');var p=raw?JSON.parse(raw):null;var k=(p&&p.state&&p.state.palette)||'fintech-orange';var MODES={'fintech-orange':'dark','lime-glow':'dark','coral-light':'light','trader-light':'light'};var m=MODES[k]||'dark';var r=document.documentElement;r.setAttribute('data-palette',k);if(m==='dark'){r.classList.add('dark');}else{r.classList.remove('dark');}r.style.colorScheme=m;}catch(e){document.documentElement.setAttribute('data-palette','fintech-orange');document.documentElement.classList.add('dark');}})();`
   return <script dangerouslySetInnerHTML={{ __html: code }} />
 }

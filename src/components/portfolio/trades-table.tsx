@@ -36,6 +36,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import { useDeleteTrade } from '@/hooks/use-trades'
 import { type Trade } from '@/lib/trade-types'
 import { useToast } from '@/hooks/use-toast'
@@ -74,6 +79,65 @@ const resultBadge: Record<string, string> = {
   TP: 'bg-[var(--j-win)] text-white',
   SL: 'bg-[var(--j-loss)] text-white',
   BE: 'bg-[var(--j-be)] text-white',
+}
+
+/* ── Comment cell — Tooltip on desktop (hover), Popover on mobile (tap) ── */
+function CommentCell({ comment }: { comment: string }) {
+  const [isTouch, setIsTouch] = React.useState(false)
+
+  React.useEffect(() => {
+    setIsTouch(
+      'ontouchstart' in window ||
+        navigator.maxTouchPoints > 0
+    )
+  }, [])
+
+  // Short comments fit in one line — no need for tooltip/popover
+  if (comment.length <= 50) {
+    return (
+      <span className="max-w-full truncate text-center text-xs text-muted-foreground">
+        {comment}
+      </span>
+    )
+  }
+
+  // Desktop: Tooltip on hover
+  if (!isTouch) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="max-w-full cursor-help truncate text-center text-xs text-muted-foreground">
+              {comment}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs whitespace-normal break-words">
+            {comment}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )
+  }
+
+  // Mobile: Popover on tap
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <span className="max-w-full cursor-pointer truncate text-center text-xs text-muted-foreground underline decoration-dotted decoration-muted-foreground/40 underline-offset-2">
+          {comment}
+        </span>
+      </PopoverTrigger>
+      <PopoverContent
+        side="top"
+        align="center"
+        sideOffset={8}
+        collisionPadding={16}
+        className="max-w-xs whitespace-normal break-words text-xs z-[200]"
+      >
+        {comment}
+      </PopoverContent>
+    </Popover>
+  )
 }
 
 function SortHeader({
@@ -312,20 +376,7 @@ export function TradesTable({ trades }: { trades: Trade[] }) {
                   <TableCell className="overflow-hidden">
                     <div className="flex flex-col items-center gap-1">
                       {t.comment ? (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="max-w-full truncate text-center text-xs text-muted-foreground">
-                                {t.comment}
-                              </span>
-                            </TooltipTrigger>
-                            {t.comment.length > 50 && (
-                              <TooltipContent className="max-w-xs">
-                                {t.comment}
-                              </TooltipContent>
-                            )}
-                          </Tooltip>
-                        </TooltipProvider>
+                        <CommentCell comment={t.comment} />
                       ) : (
                         <span className="text-xs text-muted-foreground/40">—</span>
                       )}

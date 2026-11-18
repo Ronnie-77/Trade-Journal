@@ -55,6 +55,7 @@ const EMPTY: TradeEntryValues = {
   imageUrl: '',
   imageKind: '',
   shotMode: 'link',
+  ruleFollowed: '',
 }
 
 export function TradeForm() {
@@ -104,6 +105,7 @@ export function TradeForm() {
         plannedRisk: values.plannedRisk ? parseFloat(values.plannedRisk) : null,
         strategy: values.strategy || null,
         mood: values.mood || null,
+        ruleFollowed: values.ruleFollowed || null,
       })
       toast({ title: 'Trade added', description: summary })
       // reset volatile fields, keep instrument/side/result for batch entry
@@ -112,6 +114,7 @@ export function TradeForm() {
         instrument: v.instrument,
         side: v.side,
         result: v.result,
+        ruleFollowed: v.ruleFollowed,
         dateStr: todayISODate(),
         timeStr: nowHHMM(),
       }))

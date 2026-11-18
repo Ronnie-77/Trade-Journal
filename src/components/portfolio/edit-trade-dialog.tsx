@@ -64,6 +64,7 @@ export function EditTradeDialog({ trade, open, onOpenChange }: Props) {
       imageKind: (t.imageKind as ImageKind) || '',
       shotMode:
         t.imageKind === 'upload' ? 'upload' : t.imageUrl ? 'link' : 'link',
+      ruleFollowed: (t.ruleFollowed as string) || '',
     }
   }
 
@@ -119,6 +120,7 @@ export function EditTradeDialog({ trade, open, onOpenChange }: Props) {
           plannedRisk: values.plannedRisk ? parseFloat(values.plannedRisk) : null,
           strategy: values.strategy || null,
           mood: values.mood || null,
+          ruleFollowed: values.ruleFollowed || null,
         },
       })
       toast({ title: 'Trade updated' })
@@ -144,9 +146,9 @@ export function EditTradeDialog({ trade, open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="journal flex max-h-[88vh] max-w-[640px] flex-col border-[var(--j-line)] bg-[var(--j-bg)] p-0 sm:p-0">
+      <DialogContent showCloseButton={false} className="journal flex max-h-[92vh] max-w-[640px] flex-col border-[var(--j-line)] bg-[var(--j-bg)] p-0 sm:p-0" style={{ marginBottom: '80px' }}>
         <form onSubmit={handleSave} className="flex flex-1 flex-col overflow-hidden">
-          {/* header band */}
+          {/* header band with save button */}
           <div
             className="j-bar"
             style={{
@@ -157,13 +159,28 @@ export function EditTradeDialog({ trade, open, onOpenChange }: Props) {
               paddingBottom: 14,
             }}
           >
-            <div>
-              <DialogTitle className="j-title" style={{ fontSize: 18 }}>
-                Edit trade
-              </DialogTitle>
-              <DialogDescription className="j-sub" style={{ fontSize: 12 }}>
-                {detail}
-              </DialogDescription>
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <DialogTitle className="j-title" style={{ fontSize: 18 }}>
+                  Edit trade
+                </DialogTitle>
+                <DialogDescription className="j-sub" style={{ fontSize: 12 }}>
+                  {detail}
+                </DialogDescription>
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onOpenChange(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" size="sm" disabled={update.isPending}>
+                  {update.isPending ? 'Saving…' : 'Save'}
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -176,7 +193,7 @@ export function EditTradeDialog({ trade, open, onOpenChange }: Props) {
             />
           </div>
 
-          {/* footer */}
+          {/* footer — summary only (Save/Cancel moved to header) */}
           <div className="j-bar" style={{ borderRadius: '0 0 14px 14px' }}>
             <span className="j-sub">
               {values.side === 'BUY' ? 'Buy' : 'Sell'} ·{' '}
@@ -190,40 +207,6 @@ export function EditTradeDialog({ trade, open, onOpenChange }: Props) {
                 ? `+$${signed.toFixed(2)}`
                 : `-$${Math.abs(signed).toFixed(2)}`}
             </span>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <Button
-                type="button"
-                className="btn ghost"
-                variant="ghost"
-                onClick={() => onOpenChange(false)}
-                style={{
-                  background: 'transparent',
-                  color: 'var(--j-mute)',
-                  padding: '11px 8px',
-                }}
-              >
-                Cancel
-              </Button>
-              <button type="submit" className="btn" disabled={update.isPending}>
-                {update.isPending ? (
-                  <Loader2
-                    style={{
-                      width: 15,
-                      height: 15,
-                      animation: 'spin 1s linear infinite',
-                    }}
-                  />
-                ) : (
-                  <Save
-                    style={{
-                      width: 15,
-                      height: 15,
-                    }}
-                  />
-                )}
-                Save changes
-              </button>
-            </div>
           </div>
         </form>
       </DialogContent>

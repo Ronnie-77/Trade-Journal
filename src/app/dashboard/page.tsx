@@ -7,6 +7,7 @@ import { PortfolioSection } from '@/components/sections/portfolio'
 import { AnalyticsSection } from '@/components/sections/analytics'
 import { AccountSection } from '@/components/sections/account'
 import { Achievements } from '@/components/analytics/achievements'
+import { WeeklyAnalytics } from '@/components/analytics/weekly-analytics'
 import { useAllTrades } from '@/hooks/use-trades'
 import { useViewStore } from '@/lib/view-store'
 import { usePaletteStore, getPalette } from '@/lib/palette-store'
@@ -23,7 +24,7 @@ export default function DashboardPage() {
   const { data: allTrades } = useAllTrades()
 
   React.useEffect(() => {
-    if (view !== 'portfolio' && view !== 'analytics' && view !== 'achievements' && view !== 'account') {
+    if (view !== 'portfolio' && view !== 'analytics' && view !== 'weekly' && view !== 'achievements' && view !== 'account') {
       setView('portfolio')
     }
   }, [view, setView])
@@ -76,6 +77,12 @@ export default function DashboardPage() {
             </div>
           )}
           {view === 'analytics' ? <AnalyticsSection /> :
+           view === 'weekly' ? (
+             <section className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-10">
+               <h1 className="mb-6 text-xl font-bold tracking-tight sm:text-3xl">Weekly Analytics</h1>
+               <WeeklyAnalytics trades={allTrades ?? []} />
+             </section>
+           ) :
            view === 'achievements' ? (
              <section className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-10">
                <h1 className="mb-6 text-xl font-bold tracking-tight sm:text-3xl">Achievements</h1>

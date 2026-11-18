@@ -127,6 +127,16 @@ export async function POST(req: NextRequest) {
     body.mood === null || body.mood === undefined
       ? null
       : body.mood.toString().slice(0, 32) || null
+  const ruleFollowed =
+    body.ruleFollowed === null || body.ruleFollowed === undefined
+      ? null
+      : typeof body.ruleFollowed === 'boolean'
+      ? body.ruleFollowed
+      : body.ruleFollowed === 'yes'
+      ? true
+      : body.ruleFollowed === 'no'
+      ? false
+      : null
 
   // Get the authenticated user's email
   const user = getSessionUser(req)
@@ -148,6 +158,7 @@ export async function POST(req: NextRequest) {
         plannedRisk,
         strategy,
         mood,
+        ruleFollowed,
         userId: userEmail,
       },
     })

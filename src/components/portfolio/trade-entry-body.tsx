@@ -27,6 +27,7 @@ export interface TradeEntryValues {
   imageUrl: string
   imageKind: ImageKind
   shotMode: 'link' | 'upload'
+  ruleFollowed: string // 'yes' | 'no' | 'partial' | ''
 }
 
 interface Props {
@@ -203,6 +204,23 @@ export function TradeEntryBody({ values, onChange, amountError }: Props) {
             options={[...STRATEGY_OPTIONS]}
             value={values.strategy}
             onChange={(v) => onChange({ strategy: v })}
+          />
+        </div>
+
+        {/* Rule Followed */}
+        <span className="lbl" style={{ marginTop: 14, display: 'block' }}>Rule Followed?</span>
+        <div>
+          <Chips
+            options={['Yes', 'No', 'Partially']}
+            value={
+              values.ruleFollowed === 'yes' ? 'Yes' :
+              values.ruleFollowed === 'no' ? 'No' :
+              values.ruleFollowed === 'partial' ? 'Partially' : ''
+            }
+            onChange={(v) => {
+              const mapped = v === 'Yes' ? 'yes' : v === 'No' ? 'no' : v === 'Partially' ? 'partial' : ''
+              onChange({ ruleFollowed: mapped })
+            }}
           />
         </div>
       </section>
