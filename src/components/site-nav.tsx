@@ -70,7 +70,7 @@ function NavIcon({ icon: Icon, label, isActive, onClick }: { icon: React.Compone
 function MobileNavTab({ icon: Icon, label, isActive, onClick }: { icon: React.ComponentType<{ className?: string }>; label: string; isActive: boolean; onClick: () => void }) {
   return (
     <button onClick={onClick} className="flex flex-1 flex-col items-center justify-center gap-0.5 py-0.5" aria-label={label}>
-      <Icon className={cn('h-5 w-5 transition-colors', isActive ? 'text-primary' : 'text-muted-foreground')} fill={isActive ? 'currentColor' : 'none'} strokeWidth={isActive ? 2 : 1.5} />
+      <Icon className={cn('h-5 w-5 transition-colors', isActive ? 'text-primary' : 'text-muted-foreground')} strokeWidth={isActive ? 2 : 1.5} />
       <span className={cn('text-[9px] font-medium transition-colors', isActive ? 'text-primary' : 'text-muted-foreground')}>{label}</span>
     </button>
   )

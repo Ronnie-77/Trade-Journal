@@ -144,29 +144,29 @@ export function WeeklyAnalytics({ trades }: { trades: Trade[] }) {
 
           {/* Weekly table */}
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-xs sm:text-sm">
               <thead>
                 <tr className="border-b border-border/40">
-                  <th className="py-2 pr-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Week</th>
+                  <th className="py-2 pr-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground sm:text-xs">Week</th>
                   {WEEKDAY_LABELS.map((d) => (
-                    <th key={d} className="px-1 py-2 text-center text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{d}</th>
+                    <th key={d} className="px-1 py-2 text-center text-[10px] font-semibold uppercase tracking-wide text-muted-foreground sm:text-xs sm:px-2">{d}</th>
                   ))}
-                  <th className="py-2 pl-2 text-right text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Total</th>
+                  <th className="py-2 pl-2 text-right text-[10px] font-semibold uppercase tracking-wide text-muted-foreground sm:text-xs sm:pl-3">Total</th>
                 </tr>
               </thead>
               <tbody>
                 {weeks.map((week) => (
                   <tr key={week.weekLabel} className="border-b border-border/20">
-                    <td className="py-1.5 pr-2 font-mono text-[10px] text-muted-foreground">{week.weekLabel}</td>
+                    <td className="py-2 pr-2 font-mono text-[10px] text-muted-foreground sm:text-xs">{week.weekLabel}</td>
                     {week.days.map((val, i) => (
-                      <td key={i} className="px-1 py-1 text-center">
-                        <span className={cn('inline-block rounded px-1 py-0.5 font-mono text-[10px]', cellColor(val))}>
+                      <td key={i} className="px-1 py-1.5 text-center sm:px-2">
+                        <span className={cn('inline-block rounded px-1 py-0.5 font-mono text-[10px] sm:text-xs', cellColor(val))}>
                           {val !== 0 ? (val > 0 ? '+' : '') + val.toFixed(0) : '–'}
                         </span>
                       </td>
                     ))}
-                    <td className="py-1.5 pl-2 text-right">
-                      <span className={cn('font-mono text-[11px] font-bold', totalColor(week.total))}>
+                    <td className="py-2 pl-2 text-right sm:pl-3">
+                      <span className={cn('font-mono text-[11px] font-bold sm:text-sm', totalColor(week.total))}>
                         {week.total !== 0 ? fmtMoney(week.total) : '–'}
                       </span>
                     </td>
@@ -177,7 +177,7 @@ export function WeeklyAnalytics({ trades }: { trades: Trade[] }) {
           </div>
 
           {/* Legend */}
-          <div className="mt-3 flex items-center gap-4 text-[10px] text-muted-foreground">
+          <div className="mt-3 flex items-center gap-4 text-[10px] text-muted-foreground sm:text-xs">
             <span className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 rounded bg-emerald-500/20" /> Profit
             </span>
