@@ -9,15 +9,16 @@ import { cn } from '@/lib/utils'
  * Three candlesticks (ascending, middle tallest) with a zigzag growth
  * arrow that weaves through them and ends in a solid arrowhead.
  *
- * Fixed brand colours (no theme adaptation):
- *   - Candles: brand orange (#FF9D2E)
- *   - Arrow:   black (#000000)
+ * Fixed candle colour + theme-aware arrow:
+ *   - Candles: brand orange (#FF9D2E) — always
+ *   - Arrow:   var(--foreground) → near-white in dark themes,
+ *              near-black in light themes (white in dark mode,
+ *              black in light mode)
  *   - Background: transparent
  *
  * The arrow stroke uses `var(--background)` so the cutout gaps where it
- * crosses the candles always match whatever surface the logo sits on
- * (light page → light gaps, dark page → dark gaps), preserving the
- * signature "arrow passing through candles" look in both themes.
+ * crosses the candles always match whatever surface the logo sits on,
+ * preserving the signature "arrow passing through candles" look.
  */
 export function Logo({
   className,
@@ -39,7 +40,7 @@ export function Logo({
       xmlns="http://www.w3.org/2000/svg"
     >
       <title>{title}</title>
-      {/* Candlesticks — brand orange */}
+      {/* Candlesticks — brand orange (fixed) */}
       <g fill="#FF9D2E">
         {/* Candle 1 — left */}
         <rect x="525" y="484" width="9" height="50" />
@@ -54,11 +55,12 @@ export function Logo({
         <rect x="716" y="490" width="62" height="175" />
         <rect x="742" y="661" width="9" height="70" />
       </g>
-      {/* Zigzag arrow + arrowhead — black.
+      {/* Zigzag arrow + arrowhead — theme-aware via var(--foreground):
+          white in dark mode, black in light mode.
           Stroke matches the page background so cutout gaps where the
           arrow crosses the candles stay clean on any surface. */}
       <polygon
-        fill="#000000"
+        fill="var(--foreground)"
         stroke="var(--background)"
         strokeWidth="10"
         strokeLinejoin="miter"

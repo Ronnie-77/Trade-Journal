@@ -1,35 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32">
-  <!-- Transparent background — no background rect.
-       Brand colours (fixed, no theme switching):
-         - Candles: orange (#FF9D2E)
-         - Zigzag arrow: black (#000000)
-       No CSS media queries: PWA/Android app icons strip CSS, so a
-       single static design guarantees consistent rendering. -->
-  <!-- Brand logo scaled & centered in the 512x512 canvas.
-       Original brand coordinates span x[438..881] y[322..811] (~443x489).
-       Scaled by 0.65 → ~288x318, centered at (112, 97). -->
-  <g transform="translate(112 97) scale(0.65) translate(-438 -322)">
+  <!-- Chrome tab favicon ONLY.
+       Transparent background (no dark rect) — the favicon sits directly
+       on the browser tab surface (light or dark depending on Chrome
+       theme), so transparent keeps it clean and borderless.
+       Fixed brand colours (no CSS media queries — favicons render as
+       static images):
+         - Candles: brand orange (#FF9D2E)
+         - Zigzag arrow: white (#FFFFFF)
+       The arrow is a solid shape (no stroke) — with a transparent
+       background there is no surface colour to cut out against.
+       NOTE: this file is NOT referenced in manifest.ts. PWA install
+       icons (desktop/phone) use apple-icon.png (dark bg) instead, so
+       the installed app icon keeps its dark background while the
+       browser-tab favicon stays transparent.
+       Logo scaled to 0.80 so it reads well at 16–32px favicon size. -->
+  <g transform="translate(79 60) scale(0.80) translate(-438 -322)">
     <!-- Candlesticks — orange -->
     <g fill="#FF9D2E">
-      <!-- Candle 1 — left -->
       <rect x="525" y="484" width="9" height="50"/>
       <rect x="499" y="531" width="61" height="211"/>
       <rect x="525" y="738" width="9" height="53"/>
-      <!-- Candle 2 — middle, tallest -->
       <rect x="634" y="377" width="9" height="58"/>
       <rect x="608" y="431" width="60" height="187"/>
       <rect x="634" y="614" width="9" height="22"/>
-      <!-- Candle 3 — right -->
       <rect x="742" y="443" width="9" height="50"/>
       <rect x="716" y="490" width="62" height="175"/>
       <rect x="742" y="661" width="9" height="70"/>
     </g>
-    <!-- Zigzag arrow + arrowhead — solid black (no stroke: with a
-         transparent background there is no surface colour to cut out
-         against, so the arrow renders as a clean solid shape layered
-         over the candles). -->
+    <!-- Zigzag arrow + arrowhead — solid white (no stroke: transparent
+         bg means no surface colour to cut out against) -->
     <polygon
-      fill="#000000"
+      fill="#FFFFFF"
       points="438,811 568,627 632,675 829,384 786,380 881,322 866,432 845,395 635,708 574,654"/>
   </g>
 </svg>
