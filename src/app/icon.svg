@@ -1,21 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="32" height="32">
-  <!-- Chrome tab favicon ONLY.
-       Transparent background (no dark rect) — the favicon sits directly
-       on the browser tab surface (light or dark depending on Chrome
-       theme), so transparent keeps it clean and borderless.
-       Fixed brand colours (no CSS media queries — favicons render as
-       static images):
-         - Candles: brand orange (#FF9D2E)
-         - Zigzag arrow: white (#FFFFFF)
-       The arrow is a solid shape (no stroke) — with a transparent
-       background there is no surface colour to cut out against.
-       NOTE: this file is NOT referenced in manifest.ts. PWA install
-       icons (desktop/phone) use apple-icon.png (dark bg) instead, so
-       the installed app icon keeps its dark background while the
-       browser-tab favicon stays transparent.
+  <!-- Chrome tab favicon ONLY (not in manifest — PWA install uses
+       apple-icon.png with dark bg).
+
+       Transparent background — the favicon sits directly on the
+       browser tab surface.
+
+       Theme-aware arrow via prefers-color-scheme (supported by Chrome
+       for SVG favicons, unlike PWA app icons which strip CSS):
+         - Candles: brand orange (#FF9D2E) — always
+         - Arrow:   black in light browser theme, white in dark theme
+       This way the arrow stays visible on both light and dark tab bars.
+
        Logo scaled to 0.80 so it reads well at 16–32px favicon size. -->
+  <style>
+    .arrow { fill: #000000; }
+    @media (prefers-color-scheme: dark) {
+      .arrow { fill: #FFFFFF; }
+    }
+  </style>
   <g transform="translate(79 60) scale(0.80) translate(-438 -322)">
-    <!-- Candlesticks — orange -->
+    <!-- Candlesticks — orange (fixed) -->
     <g fill="#FF9D2E">
       <rect x="525" y="484" width="9" height="50"/>
       <rect x="499" y="531" width="61" height="211"/>
@@ -27,10 +31,8 @@
       <rect x="716" y="490" width="62" height="175"/>
       <rect x="742" y="661" width="9" height="70"/>
     </g>
-    <!-- Zigzag arrow + arrowhead — solid white (no stroke: transparent
-         bg means no surface colour to cut out against) -->
-    <polygon
-      fill="#FFFFFF"
+    <!-- Zigzag arrow + arrowhead — theme-aware (black light / white dark) -->
+    <polygon class="arrow"
       points="438,811 568,627 632,675 829,384 786,380 881,322 866,432 845,395 635,708 574,654"/>
   </g>
 </svg>
