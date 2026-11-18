@@ -7,16 +7,17 @@ import { cn } from '@/lib/utils'
  * Trade Journal logo — uses the exact brand SVG provided by the user.
  *
  * Three candlesticks (ascending, middle tallest) with a zigzag growth
- * arrow that weaves through them and ends in a solid arrowhead. The
- * arrow's stroke matches the page background, creating clean cutouts
- * where it crosses the candles.
+ * arrow that weaves through them and ends in a solid arrowhead.
  *
- * Drawn with `currentColor` so it automatically adapts to the theme:
- *   - dark mode  → foreground is near-white  (logo = white on dark bg)
- *   - light mode → foreground is near-black  (logo = dark on light bg)
+ * Fixed brand colours (no theme adaptation):
+ *   - Candles: brand orange (#FF9D2E)
+ *   - Arrow:   black (#000000)
+ *   - Background: transparent
  *
- * The arrow stroke uses `var(--background)` so the cutout gaps always
- * match whatever surface the logo sits on.
+ * The arrow stroke uses `var(--background)` so the cutout gaps where it
+ * crosses the candles always match whatever surface the logo sits on
+ * (light page → light gaps, dark page → dark gaps), preserving the
+ * signature "arrow passing through candles" look in both themes.
  */
 export function Logo({
   className,
@@ -34,12 +35,12 @@ export function Logo({
       height={size}
       role="img"
       aria-label={title}
-      className={cn('text-foreground', className)}
+      className={cn(className)}
       xmlns="http://www.w3.org/2000/svg"
     >
       <title>{title}</title>
-      {/* Candlesticks — fill adapts to theme via currentColor */}
-      <g fill="currentColor">
+      {/* Candlesticks — brand orange */}
+      <g fill="#FF9D2E">
         {/* Candle 1 — left */}
         <rect x="525" y="484" width="9" height="50" />
         <rect x="499" y="531" width="61" height="211" />
@@ -53,10 +54,11 @@ export function Logo({
         <rect x="716" y="490" width="62" height="175" />
         <rect x="742" y="661" width="9" height="70" />
       </g>
-      {/* Zigzag arrow + arrowhead — fill adapts to theme via currentColor.
-          Stroke matches the page background so cutout gaps stay clean. */}
+      {/* Zigzag arrow + arrowhead — black.
+          Stroke matches the page background so cutout gaps where the
+          arrow crosses the candles stay clean on any surface. */}
       <polygon
-        fill="currentColor"
+        fill="#000000"
         stroke="var(--background)"
         strokeWidth="10"
         strokeLinejoin="miter"
